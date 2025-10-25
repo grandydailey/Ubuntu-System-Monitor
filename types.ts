@@ -1,11 +1,13 @@
 
+export interface DiskPartition {
+  name: string;
+  used: number;
+  total: number;
+}
+
 export interface SystemStats {
   temp: number;
   memory: {
-    used: number;
-    total: number;
-  };
-  disk: {
     used: number;
     total: number;
   };

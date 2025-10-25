@@ -1,101 +1,112 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Panel from './Panel';
 import { AUTH_LOG_SAMPLE, APACHE_LOG_SAMPLE } from '../data/mockLogs';
+import { SpeakerOnIcon, SpeakerOffIcon } from './icons';
 
 type LogSource = 'auth' | 'apache';
-
-// Define audio context at module level, to be initialized on user gesture.
-let audioContext: AudioContext | null = null;
-
-const playAlertSound = () => {
-  if (!audioContext) {
-    console.warn('AudioContext not initialized. Click a log button to enable audio alerts.');
-    return;
-  }
-  
-  if (audioContext.state === 'suspended') {
-    audioContext.resume();
-  }
-
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  oscillator.type = 'triangle';
-  oscillator.frequency.setValueAtTime(900, audioContext.currentTime); // High-pitched alert
-  gainNode.gain.setValueAtTime(0.05, audioContext.currentTime); // Keep volume low
-
-  oscillator.start();
-  oscillator.stop(audioContext.currentTime + 0.1); // 100ms beep
-};
-
-const playIntrusionAlertSound = () => {
-  if (!audioContext) return;
-  if (audioContext.state === 'suspended') audioContext.resume();
-
-  const oscillator = audioContext.createOscillator();
-  const gainNode = audioContext.createGain();
-  oscillator.connect(gainNode);
-  gainNode.connect(audioContext.destination);
-
-  oscillator.type = 'sawtooth';
-  gainNode.gain.setValueAtTime(0.08, audioContext.currentTime);
-
-  // Create a siren-like effect
-  oscillator.frequency.setValueAtTime(440, audioContext.currentTime);
-  oscillator.frequency.linearRampToValueAtTime(660, audioContext.currentTime + 0.15);
-  oscillator.frequency.linearRampToValueAtTime(440, audioContext.currentTime + 0.3);
-
-  oscillator.start();
-  oscillator.stop(audioContext.currentTime + 0.3);
+type LogLine = {
+  text: string;
+  type: 'normal' | 'error' | 'critical';
 };
 
 
 const LogTailPanel: React.FC = () => {
   const [activeLog, setActiveLog] = useState<LogSource | null>(null);
-  const [logLines, setLogLines] = useState<string[]>([]);
+  const [logLines, setLogLines] = useState<LogLine[]>([]);
+  const [isMuted, setIsMuted] = useState(false);
+  const audioContextRef = useRef<AudioContext | null>(null);
 
-  useEffect(() => {
-    let interval: number;
-
-    if (activeLog) {
-      setLogLines([]); // Clear previous logs
-      interval = window.setInterval(() => {
-        const source = activeLog === 'auth' ? AUTH_LOG_SAMPLE : APACHE_LOG_SAMPLE;
-        const newLine = source[Math.floor(Math.random() * source.length)];
-        
-        const lowerLine = newLine.toLowerCase();
-        const isSshdFailure = activeLog === 'auth' && lowerLine.includes('sshd') && lowerLine.includes('failed password');
-        const isGeneralAuthError = activeLog === 'auth' && lowerLine.includes('failed');
-        const isApacheError = activeLog === 'apache' && /"\s[45]\d{2}\s/.test(newLine);
-
-        if (isSshdFailure) {
-          playIntrusionAlertSound();
-        } else if (isGeneralAuthError || isApacheError) {
-          playAlertSound();
-        }
-
-        setLogLines(prevLines => {
-          const updatedLines = [...prevLines, newLine];
-          if (updatedLines.length > 100) {
-            return updatedLines.slice(updatedLines.length - 100);
-          }
-          return updatedLines;
-        });
-      }, 800);
+  const playAlertSound = useCallback(() => {
+    if (isMuted || !audioContextRef.current) return;
+    
+    if (audioContextRef.current.state === 'suspended') {
+      audioContextRef.current.resume();
     }
+  
+    const context = audioContextRef.current;
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+  
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+  
+    oscillator.type = 'triangle';
+    oscillator.frequency.setValueAtTime(900, context.currentTime); // High-pitched alert
+    gainNode.gain.setValueAtTime(0.05, context.currentTime); // Keep volume low
+  
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.1); // 100ms beep
+  }, [isMuted]);
 
-    return () => {
-      if (interval) clearInterval(interval);
-    };
+  const playIntrusionAlertSound = useCallback(() => {
+    if (isMuted || !audioContextRef.current) return;
+    if (audioContextRef.current.state === 'suspended') audioContextRef.current.resume();
+  
+    const context = audioContextRef.current;
+    const oscillator = context.createOscillator();
+    const gainNode = context.createGain();
+    oscillator.connect(gainNode);
+    gainNode.connect(context.destination);
+  
+    oscillator.type = 'sawtooth';
+    gainNode.gain.setValueAtTime(0.08, context.currentTime);
+  
+    // Create a siren-like effect
+    oscillator.frequency.setValueAtTime(440, context.currentTime);
+    oscillator.frequency.linearRampToValueAtTime(660, context.currentTime + 0.15);
+    oscillator.frequency.linearRampToValueAtTime(440, context.currentTime + 0.3);
+  
+    oscillator.start();
+    oscillator.stop(context.currentTime + 0.3);
+  }, [isMuted]);
+
+  // Effect to clear logs ONLY when the source changes
+  useEffect(() => {
+    if (activeLog) {
+      setLogLines([]);
+    }
   }, [activeLog]);
 
+  // Effect for the log generation interval
+  useEffect(() => {
+    if (!activeLog) return;
+
+    const interval = window.setInterval(() => {
+      const source = activeLog === 'auth' ? AUTH_LOG_SAMPLE : APACHE_LOG_SAMPLE;
+      const newLineText = source[Math.floor(Math.random() * source.length)];
+      
+      const lowerLine = newLineText.toLowerCase();
+      const isSshdFailure = activeLog === 'auth' && lowerLine.includes('sshd') && lowerLine.includes('failed password');
+      const isApacheError = activeLog === 'apache' && /"\s[45]\d{2}\s/.test(newLineText);
+      const isGeneralAuthError = activeLog === 'auth' && lowerLine.includes('failed') && !isSshdFailure;
+
+      let lineType: LogLine['type'] = 'normal';
+      if (isSshdFailure) {
+        playIntrusionAlertSound();
+        lineType = 'critical';
+      } else if (isGeneralAuthError || isApacheError) {
+        playAlertSound();
+        lineType = 'error';
+      }
+
+      const newLine: LogLine = { text: newLineText, type: lineType };
+
+      setLogLines(prevLines => {
+        const updatedLines = [...prevLines, newLine];
+        if (updatedLines.length > 100) {
+          return updatedLines.slice(updatedLines.length - 100);
+        }
+        return updatedLines;
+      });
+    }, 800);
+
+    return () => clearInterval(interval);
+  }, [activeLog, playAlertSound, playIntrusionAlertSound]);
+
   const handleSelectLog = (source: LogSource) => {
-    if (!audioContext && typeof window !== 'undefined') {
+    if (!audioContextRef.current && typeof window !== 'undefined') {
       try {
-        audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
       } catch (e) {
         console.error("Web Audio API is not supported in this browser.", e);
       }
@@ -112,20 +123,40 @@ const LogTailPanel: React.FC = () => {
 
   return (
     <Panel title="tail -f [log_file]" className="flex flex-col">
-      <div className="p-2 border-b border-gray-700 flex space-x-2">
-        <button onClick={() => handleSelectLog('auth')} className={getButtonClass('auth')}>
-          auth.log
-        </button>
-        <button onClick={() => handleSelectLog('apache')} className={getButtonClass('apache')}>
-          apache2/access.log
+      <div className="p-2 border-b border-gray-700 flex justify-between items-center">
+        <div className="flex space-x-2">
+            <button onClick={() => handleSelectLog('auth')} className={getButtonClass('auth')}>
+            auth.log
+            </button>
+            <button onClick={() => handleSelectLog('apache')} className={getButtonClass('apache')}>
+            apache2/access.log
+            </button>
+        </div>
+        <button
+            onClick={() => setIsMuted(!isMuted)}
+            className={`p-2 rounded-md transition-colors duration-200 ${isMuted ? 'text-gray-500 bg-gray-800 hover:bg-gray-700' : 'text-cyan-400 bg-gray-700 hover:bg-gray-600'}`}
+            aria-label={isMuted ? 'Unmute alerts' : 'Mute alerts'}
+        >
+            {isMuted ? <SpeakerOffIcon /> : <SpeakerOnIcon />}
         </button>
       </div>
-      <div className="p-2 flex-grow overflow-y-auto">
-        <pre className="text-xs whitespace-pre-wrap break-all">
-          {logLines.length > 0 
-            ? logLines.join('\n')
-            : <span className="text-gray-500">Select a log file to tail...</span>}
-        </pre>
+      <div className="p-2 flex-grow overflow-y-auto text-xs">
+        {logLines.length > 0 
+          ? logLines.map((line, index) => {
+              let lineClass = 'text-gray-300';
+              if (line.type === 'error') lineClass = 'text-yellow-400';
+              if (line.type === 'critical') lineClass = 'text-red-500 font-bold';
+              
+              return (
+                <div 
+                  key={index}
+                  className={`whitespace-pre-wrap break-all px-2 py-0.5 rounded ${index % 2 === 0 ? 'bg-gray-800/50' : ''} ${lineClass}`}
+                >
+                  {line.text}
+                </div>
+              );
+            })
+          : <span className="text-gray-500 px-2">Select a log file to tail...</span>}
       </div>
     </Panel>
   );

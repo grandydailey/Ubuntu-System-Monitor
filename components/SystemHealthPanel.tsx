@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import type { SystemStats, PerformanceData, GroupedError } from '../types';
-import { CpuIcon, DiskIcon, MemoryIcon, TemperatureIcon, WifiIcon, AlertTriangleIcon, ServerIcon, OsIcon } from './icons';
+import { CpuIcon, MemoryIcon, TemperatureIcon, WifiIcon, AlertTriangleIcon, ServerIcon, OsIcon } from './icons';
 import Panel from './Panel';
 import ErrorModal from './ErrorModal';
 import { SYSLOG_DATA, APACHE_ERROR_LOG_SAMPLE } from '../data/mockLogs';
@@ -15,7 +15,6 @@ const SystemHealthPanel: React.FC = () => {
   const [stats, setStats] = useState<SystemStats>({
     temp: 55,
     memory: { used: 4.2, total: 16.0 },
-    disk: { used: 250, total: 1024 },
     wifi: { ssid: 'Ubuntu-Net', signal: 88 },
   });
   
@@ -27,6 +26,7 @@ const SystemHealthPanel: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [unacknowledgedErrors, setUnacknowledgedErrors] = useState<GroupedError[]>([]);
   const prevLogErrorsRef = useRef({ syslog: 0, apache: 0 });
+  const [errorKey, setErrorKey] = useState({ syslog: 0, apache: 0 });
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -35,10 +35,6 @@ const SystemHealthPanel: React.FC = () => {
         memory: { 
           used: Math.max(2.0, Math.min(15.5, prevStats.memory.used + (Math.random() - 0.5) * 0.2)),
           total: 16.0
-        },
-        disk: {
-          used: prevStats.disk.used + Math.random() * 0.01,
-          total: 1024
         },
         wifi: {
           ...prevStats.wifi,
@@ -60,11 +56,16 @@ const SystemHealthPanel: React.FC = () => {
       const newErrors: RawError[] = [];
       const timestamp = new Date().toLocaleTimeString();
 
-      if (syslogErrorCount > prevLogErrorsRef.current.syslog) {
+      const newSyslog = syslogErrorCount > prevLogErrorsRef.current.syslog;
+      const newApache = apacheErrorCount > prevLogErrorsRef.current.apache;
+      
+      if (newSyslog) {
+          setErrorKey(k => ({ ...k, syslog: k.syslog + 1 }));
           const lastSyslogError = syslogErrorLines[syslogErrorLines.length - 1] || "Generic syslog error detected.";
           newErrors.push({ message: `SYSLOG: ${lastSyslogError}`, timestamp });
       }
-      if (apacheErrorCount > prevLogErrorsRef.current.apache) {
+      if (newApache) {
+          setErrorKey(k => ({ ...k, apache: k.apache + 1 }));
           const lastApacheError = apacheErrorLines[apacheErrorLines.length - 1] || "Generic Apache error detected.";
           newErrors.push({ message: `APACHE: ${lastApacheError}`, timestamp });
       }
@@ -105,11 +106,10 @@ const SystemHealthPanel: React.FC = () => {
   };
 
   const memPercent = (stats.memory.used / stats.memory.total) * 100;
-  const diskPercent = (stats.disk.used / stats.disk.total) * 100;
   const totalErrorCount = unacknowledgedErrors.reduce((sum, error) => sum + error.count, 0);
 
   const StatItem: React.FC<{ icon: React.ReactNode; label: string; value: string; }> = ({ icon, label, value }) => (
-    <div className="flex items-center space-x-2">
+    <div className="flex items-center space-x-2 text-xs">
       {icon}
       <span>{label}:</span>
       <span className="text-green-400">{value}</span>
@@ -119,8 +119,8 @@ const SystemHealthPanel: React.FC = () => {
   const ProgressBar: React.FC<{ percent: number }> = ({ percent }) => {
     const bgColor = percent > 85 ? 'bg-red-500' : percent > 60 ? 'bg-yellow-500' : 'bg-green-500';
     return (
-      <div className="w-full bg-gray-700 rounded-full h-2.5">
-        <div className={`${bgColor} h-2.5 rounded-full`} style={{ width: `${percent}%` }}></div>
+      <div className="w-full bg-gray-700 rounded-full h-1.5">
+        <div className={`${bgColor} h-1.5 rounded-full`} style={{ width: `${percent}%` }}></div>
       </div>
     );
   };
@@ -129,8 +129,8 @@ const SystemHealthPanel: React.FC = () => {
     <>
       <Panel title="System Health Overview" className="!bg-gray-900/50 backdrop-blur-sm">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 p-2">
-          <div className="space-y-2">
-            <h3 className="text-green-400 font-bold">./status</h3>
+          <div className="space-y-1">
+            <h3 className="text-green-400 font-bold mb-1">./status</h3>
             <StatItem icon={<ServerIcon />} label="Server" value="ubuntu-prod-01" />
             <StatItem icon={<OsIcon />} label="OS" value="Ubuntu 22.04.3 LTS" />
             <StatItem icon={<TemperatureIcon />} label="CPU Temp" value={`${stats.temp.toFixed(1)}°C`} />
@@ -139,22 +139,18 @@ const SystemHealthPanel: React.FC = () => {
               <StatItem icon={<MemoryIcon />} label="Memory" value={`${memPercent.toFixed(1)}% (${stats.memory.used.toFixed(1)}G/${stats.memory.total}G)`} />
               <ProgressBar percent={memPercent} />
             </div>
-            <div className="space-y-1">
-              <StatItem icon={<DiskIcon />} label="Disk" value={`${diskPercent.toFixed(1)}% (${stats.disk.used.toFixed(0)}G/${stats.disk.total}G)`} />
-              <ProgressBar percent={diskPercent} />
-            </div>
           </div>
           
           <div className="space-y-2">
             <h3 className="text-yellow-400 font-bold">./log_monitor</h3>
-            <div className="flex items-center space-x-2">
+            <div key={`syslog-${errorKey.syslog}`} className={`flex items-center space-x-2 p-1 -m-1 rounded ${errorKey.syslog > 0 ? 'animate-flash' : ''}`}>
               <AlertTriangleIcon className={logErrors.syslog > 0 ? "text-red-500" : "text-green-500"} />
               <span>System Log:</span>
               <span className={logErrors.syslog > 0 ? "text-red-500" : "text-green-500"}>
                 {logErrors.syslog} errors
               </span>
             </div>
-            <div className="flex items-center space-x-2">
+            <div key={`apache-${errorKey.apache}`} className={`flex items-center space-x-2 p-1 -m-1 rounded ${errorKey.apache > 0 ? 'animate-flash' : ''}`}>
               <AlertTriangleIcon className={logErrors.apache > 0 ? "text-red-500" : "text-green-500"} />
               <span>Apache2 Error Log:</span>
               <span className={logErrors.apache > 0 ? "text-red-500" : "text-green-500"}>

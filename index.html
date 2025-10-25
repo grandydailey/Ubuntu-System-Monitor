@@ -27,6 +27,17 @@
       body {
         overscroll-behavior: none;
       }
+      @keyframes flash-red-bg {
+        0%, 100% {
+          background-color: transparent;
+        }
+        50% {
+          background-color: rgba(239, 68, 68, 0.4); /* red-500 at 40% opacity */
+        }
+      }
+      .animate-flash {
+        animation: flash-red-bg 700ms ease-in-out;
+      }
     </style>
   <script type="importmap">
 {

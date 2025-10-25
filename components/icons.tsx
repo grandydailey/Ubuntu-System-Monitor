@@ -73,3 +73,30 @@ export const AlertTriangleIcon: React.FC<{className?: string}> = ({ className })
     <line x1="12" y1="17" x2="12.01" y2="17"></line>
   </svg>
 );
+
+export const ArrowUpIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M12 19V5M5 12l7-7 7 7" />
+    </svg>
+);
+
+export const ArrowDownIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M12 5v14m-7-7l7 7 7-7" />
+    </svg>
+);
+
+export const SpeakerOnIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+    </svg>
+);
+
+export const SpeakerOffIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M11 5L6 9H2v6h4l5 4V5z"></path>
+        <line x1="23" y1="9" x2="17" y2="15"></line>
+        <line x1="17" y1="9" x2="23" y2="15"></line>
+    </svg>
+);
