@@ -1,0 +1,5 @@
+{
+  "name": "Ubuntu System Monitor",
+  "description": "A web-based dashboard that simulates a 4-panel terminal monitoring tool for Ubuntu systems, displaying system health, live log tailing, log querying, and an audio visualizer.",
+  "requestFramePermissions": []
+}
