@@ -7,7 +7,7 @@ const LogQueryPanel: React.FC = () => {
 
   const filteredLogs = useMemo(() => {
     if (!query) {
-      return SYSLOG_DATA.slice(-100); // Show last 100 lines by default
+      return []; // Show no lines by default
     }
     const lowerCaseQuery = query.toLowerCase();
     return SYSLOG_DATA.filter(line => line.toLowerCase().includes(lowerCaseQuery)).slice(-100);
