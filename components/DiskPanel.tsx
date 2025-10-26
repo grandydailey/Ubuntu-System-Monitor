@@ -3,6 +3,10 @@ import Panel from './Panel';
 import { DiskIcon, AlertTriangleIcon, FailingDiskIcon } from './icons';
 import type { DiskPartition } from '../types';
 
+interface DiskPanelProps {
+  onAskAI?: (query: string) => void;
+}
+
 const StatItem: React.FC<{ icon: React.ReactNode; label: string; value: string; isWarning?: boolean; }> = ({ icon, label, value, isWarning }) => (
   <div className="flex items-center space-x-2 text-xs">
     {icon}
@@ -30,7 +34,7 @@ const ProgressBar: React.FC<{ percent: number; isFailing?: boolean; }> = ({ perc
   );
 };
 
-const DiskPanel: React.FC = () => {
+const DiskPanel: React.FC<DiskPanelProps> = ({ onAskAI }) => {
   const [diskStats, setDiskStats] = useState<DiskPartition[]>([
     { name: 'sda1', used: 0.5, total: 1.0, status: 'ok' },
     { name: 'sda2', used: 0.25, total: 1.0, status: 'failing' }, // Pre-set to failing for demo
@@ -40,24 +44,50 @@ const DiskPanel: React.FC = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setDiskStats(prevDiskStats =>
-        prevDiskStats.map(p => {
-          let newStatus = p.status;
-          // Once failing, it stays failing. If ok, it has a small chance to fail.
-          if (p.status !== 'failing' && Math.random() < 0.003) {
-            newStatus = 'failing';
-          }
-          return { 
-            ...p, 
-            // Stop updating usage if failing
-            used: newStatus === 'failing' ? p.used : Math.max(0, Math.min(p.total, p.used + (Math.random() - 0.49) * (p.total * 0.005))),
-            status: newStatus 
+      setDiskStats(prevDiskStats => {
+        const newlyFailedDisks: DiskPartition[] = [];
+        const nextDiskStats = prevDiskStats.map(p => {
+          // Keep already failing disks as failing
+          if (p.status === 'failing') return p;
+
+          // Simulate usage fluctuations
+          const updatedPartition = {
+            ...p,
+            used: Math.max(0, Math.min(p.total, p.used + (Math.random() - 0.49) * (p.total * 0.005))),
           };
-        })
-      );
+
+          const usagePercent = (updatedPartition.used / updatedPartition.total) * 100;
+          let failureChance = 0.001; // Base failure chance
+          if (usagePercent > 95) {
+            failureChance = 0.01; // Higher chance for very full disks
+          } else if (usagePercent > 85) {
+            failureChance = 0.005; // Slightly higher chance for full disks
+          }
+          
+          // Check for random failure based on calculated chance
+          if (Math.random() < failureChance) {
+            const failedDisk = { ...updatedPartition, status: 'failing' as const };
+            newlyFailedDisks.push(failedDisk);
+            return failedDisk;
+          }
+          
+          return updatedPartition;
+        });
+
+        if (newlyFailedDisks.length > 0 && onAskAI) {
+            const diskDetails = newlyFailedDisks.map(p => 
+                `- /dev/${p.name} (Capacity: ${p.total.toFixed(1)}G, Used: ${p.used.toFixed(1)}G)`
+            ).join('\n');
+
+            const prompt = `The following disk(s) are reporting a 'failing' status:\n${diskDetails}\n\nThis is a critical hardware alert that could lead to data loss. Please provide diagnostic steps and commands to investigate these failures.`;
+            onAskAI(prompt);
+        }
+
+        return nextDiskStats;
+      });
     }, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [onAskAI]);
 
   return (
     <Panel title="./df -h --alerts" className="!bg-gray-900/75 backdrop-blur-sm">

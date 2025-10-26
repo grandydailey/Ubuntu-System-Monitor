@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { GoogleGenAI, Chat } from '@google/genai';
 import Panel from './Panel';
 
@@ -10,9 +10,11 @@ interface Message {
 interface ChatbotPanelProps {
   initialQuery?: string;
   onQueryHandled?: () => void;
+  autoSendQuery?: string;
+  onQuerySent?: () => void;
 }
 
-const ChatbotPanel: React.FC<ChatbotPanelProps> = ({ initialQuery, onQueryHandled }) => {
+const ChatbotPanel: React.FC<ChatbotPanelProps> = ({ initialQuery, onQueryHandled, autoSendQuery, onQuerySent }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -35,7 +37,7 @@ const ChatbotPanel: React.FC<ChatbotPanelProps> = ({ initialQuery, onQueryHandle
     }
   }, []);
   
-  const sendMessage = async (messageText: string) => {
+  const sendMessage = useCallback(async (messageText: string) => {
     if (!messageText.trim() || !chatRef.current) return;
 
     setIsLoading(true);
@@ -59,11 +61,19 @@ const ChatbotPanel: React.FC<ChatbotPanelProps> = ({ initialQuery, onQueryHandle
     } catch (error) {
       console.error("Gemini API error:", error);
       const errorMessage: Message = { role: 'model', content: "Sorry, I encountered an error. Please try again." };
-      setMessages(prev => [...prev, errorMessage]);
+      setMessages(prev => {
+        const newMessages = [...prev];
+        if (newMessages[newMessages.length - 1]?.role === 'model' && newMessages[newMessages.length - 1]?.content === '') {
+          newMessages[newMessages.length - 1] = errorMessage;
+        } else {
+          newMessages.push(errorMessage)
+        }
+        return newMessages;
+      });
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     if (initialQuery && onQueryHandled) {
@@ -72,6 +82,13 @@ const ChatbotPanel: React.FC<ChatbotPanelProps> = ({ initialQuery, onQueryHandle
       onQueryHandled();
     }
   }, [initialQuery, onQueryHandled]);
+
+  useEffect(() => {
+    if (autoSendQuery && onQuerySent) {
+      sendMessage(autoSendQuery);
+      onQuerySent();
+    }
+  }, [autoSendQuery, onQuerySent, sendMessage]);
 
   useEffect(() => {
     if (chatHistoryRef.current) {
