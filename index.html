@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="UTF-g" />
-    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACyElEQVR4nO2Xv0sjcRjHP8/9vkt7q12sjgpSF4coFwcxiJtQCunh4uDQP+Diajg4dLA4dHASHBwcungpdHBwcXFwcXEIUhxCpCAOSgrBItna2/f6vl5Pj4Qb7b1X58D9+N734/3+fr/f5/d9DxFRIpGIVqsFg8EAnU4Hw+HAarXiBwJ6cXGxVCqV+XweDocDq9WK1+sF8/n8wY+Pj1+8Xu9P0Wh0IpPJyOfzTCaTzGazTCaTbDZ7o06n84WLi4sHHo/nK2NjY5fK5bLf739TKBQyGo0mk8lEpVJJJBIhBLfb/Q0ANTU12Gw2hULhCyYnJ09kMpnJZrN/SUREROa5XI6IiKSUWCx2UqvV/sVi8UMkEvlJRBKRkFgslo/FYj9TSiksFvtJr9f/CoVC9o+MjDxQKBSSy+VSqVSSyWRyOBw8HowhIpHI/slk8kM+n/+zXC7/zmaz/SRN01gslkwmk1gslo/FYn/BYPCfTCbzp0aj8YW8Xm+5XO4LhUL2z8zMfFAoFFIpFBLf6/V+8Xu9X0ql0iVJUnU6na/k8/kLh8N2OBwql8t/YDAYTCaT/bIsC4vFkkgk0ul0Pp/vCwaDoVqt/kQi8UPZ7fY/+Xy+3+/3+zQaja8kEgm/349hGLIsQwiBZVlIJBJkMhkqlQqpVAqpVAqZTIZIJAJZlgVDsCwLhmEQwmaz+UQi8UPZ7fbfarX6f3p6+oVCofh9ff0LhUIh+/X19cViudxfKBTy+/0ajcZ/URSF/X5/tVrtK4vF8p8sy8VisSQSiWQyGUqlUiqVCplMhslkIpFIkGUZhmEQhmFZFoVC4ReLxb7VarV/PB7/R6PR/zKZzPc0Tcvn83/B4/F8pbBY7JckSe+VSqX/TCaTvSRJ+o9Go/94PP5HpVL5TyaT+V+v1/+RSCR+yWQy3+v1/gEA/ADwW+l6ex1WIAAAAABJRU5ErkJggg==" />
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAACyElEQVR4nO2Xv0sjcRjHP8/9vkt7q12sjgpSF4coFwcxiJtQCunh4uDQP+Diajg4dLA4dHASHBwcungpdHBwcXFwcXEIUhxCpCAOSgrBItna2/f6vl5Pj4Qb7b1X58D9+N734/3+fr/f5/d9DxFRIpGIVqsFg8EAnU4Hw+HAarXiBwJ6cXGxVCqV+XweDocDq9WK1+sF8/n8wY+Pj1+8Xu9P0Wh0IpPJyOfzTCaTzGazTCaTbDZ7o06n84WLi4sHHo/nK2NjY5fK5bLf739TKBQyGo0mk8lEpVJJJBIhBLfb/Q0ANTU12Gw2hULhCyYnJ09kMpnJZrN/SUREROa5XI6IiKSUWCx2UqvV/sVi8UMkEvlJRBKRkFgslo/FYj9TSiksFvtJr9f/CoVC9o+MjDxQKBSSy+VSqVSSyWRyOBw8HowhIpHI/slk8kM+n/+zXC7/zmaz/SRN01gslkwmk1gslo/FYn/BYPCfTCbzp0aj8YW8Xm+5XO4LhUL2z8zMfFAoFFIpFBLf6/V+8Xu9X0ql0iVJUnU6na/k8/kLh8N2OBwql8t/YDAYTCaT/bIsC4vFkkgk0ul0Pp/vCwaDoVqt/kQi8UPZ7fY/+Xy+3+/3+zQaja8kEgm/349hGLIsQwiBZVlIJBJkMhkqlQqpVAqpVAqZTIZIJAJZlgVDsCwLhmEQwmaz+UQi8UPZ7fbfarX6f3p6+oVCofh9ff0LhUIh+/X19cViudxfKBTy+/0ajcZ/URSF/X5/tVrtK4vF8p8sy8VisSQSiWQyGUqlUiqVCplMhslkIpFIkGUZhmEQhmFZFoVC4ReLxb7VarV/PB7/R6PR/zKZzPc0Tcvn83/B4/F8pbBY7JckSe+VSqX/TCaTvSRJ+o9Go/94PP5HpVL5TyaT+V+v1/gEA/ADwW+l6ex1WIAAAAABJRU5ErkJggg==" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Namour System Monitor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -55,6 +55,14 @@
       }
       .animate-flash {
         animation: flash-red-bg 700ms ease-in-out;
+      }
+      @keyframes blink-cursor {
+        from, to { border-color: transparent }
+        50% { border-color: #38bdf8; /* primary color */ }
+      }
+      .cursor-blink {
+        border-right: 0.2em solid #38bdf8;
+        animation: blink-cursor 1s step-end infinite;
       }
     </style>
   <script type="importmap">

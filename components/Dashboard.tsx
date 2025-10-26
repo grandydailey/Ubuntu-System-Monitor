@@ -1,10 +1,8 @@
 import React, { useState, useCallback } from 'react';
 import SystemHealthPanel from './SystemHealthPanel';
 import LogTailPanel from './LogTailPanel';
-import LogQueryPanel from './LogQueryPanel';
+import TerminalPanel from './TerminalPanel';
 import ChatbotPanel from './ChatbotPanel';
-import DiskPanel from './DiskPanel';
-import NetworkPanel from './NetworkPanel';
 
 const Dashboard: React.FC = () => {
   const [aiPrefillQuery, setAiPrefillQuery] = useState('');
@@ -29,27 +27,19 @@ const Dashboard: React.FC = () => {
         <SystemHealthPanel onAskAI={handlePrefillAI} />
       </header>
       <main className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-2 md:gap-4 overflow-hidden">
-        <div className="lg:col-span-1 h-full flex flex-col gap-2 md:gap-4 overflow-hidden">
-          <div className="flex-1 overflow-hidden">
-            <DiskPanel onAskAI={handleAutoSendAI} />
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <NetworkPanel />
-          </div>
-          <div className="flex-1 overflow-hidden">
-            <ChatbotPanel 
+        <div className="lg:col-span-1 h-full overflow-hidden">
+          <LogTailPanel onAskAI={handlePrefillAI} />
+        </div>
+        <div className="lg:col-span-1 h-full overflow-hidden">
+          <TerminalPanel />
+        </div>
+        <div className="lg:col-span-1 h-full overflow-hidden">
+           <ChatbotPanel 
               initialQuery={aiPrefillQuery} 
               onQueryHandled={handleQueryHandled}
               autoSendQuery={aiAutoSendQuery}
               onQuerySent={handleQuerySent}
             />
-          </div>
-        </div>
-        <div className="lg:col-span-1 h-full overflow-hidden">
-          <LogTailPanel onAskAI={handlePrefillAI} />
-        </div>
-        <div className="lg:col-span-1 h-full overflow-hidden">
-          <LogQueryPanel />
         </div>
       </main>
     </div>
