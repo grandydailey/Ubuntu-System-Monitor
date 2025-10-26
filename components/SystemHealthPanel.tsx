@@ -149,7 +149,7 @@ const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({ onAskAI }) => {
               <ProgressBar percent={memPercent} />
             </div>
              <div className="flex items-center space-x-4">
-                <StatItem icon={<TemperatureIcon />} label="CPU" value={`${stats.temp.toFixed(1)}°C`} />
+                <StatItem icon={<TemperatureIcon />} label="CPU" value={`${((stats.temp * 9/5) + 32).toFixed(1)}°F`} />
                 <StatItem icon={<WifiIcon />} label="WiFi" value={`${stats.wifi.signal.toFixed(0)}%`} />
             </div>
           </div>

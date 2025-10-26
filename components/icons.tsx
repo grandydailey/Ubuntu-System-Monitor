@@ -88,18 +88,6 @@ export const AlertTriangleIcon: React.FC<{className?: string}> = ({ className })
   </svg>
 );
 
-export const ArrowUpIcon: React.FC<{className?: string}> = ({ className }) => (
-    <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M12 19V5M5 12l7-7 7 7" />
-    </svg>
-);
-
-export const ArrowDownIcon: React.FC<{className?: string}> = ({ className }) => (
-    <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-        <path d="M12 5v14m-7-7l7 7 7-7" />
-    </svg>
-);
-
 export const SpeakerOnIcon: React.FC<{className?: string}> = ({ className }) => (
     <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
         <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
@@ -133,5 +121,12 @@ export const PauseIcon: React.FC<{className?: string}> = ({ className }) => (
 export const PlayIcon: React.FC<{className?: string}> = ({ className }) => (
     <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <polygon points="5 3 19 12 5 21 5 3"></polygon>
+    </svg>
+);
+
+export const RefreshIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M23 4v6h-6" />
+        <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
     </svg>
 );

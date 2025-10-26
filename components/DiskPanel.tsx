@@ -89,7 +89,7 @@ const DiskPanel: React.FC<DiskPanelProps> = ({ onAskAI }) => {
 
         if (newlyFailedDisks.length > 0 && onAskAI) {
             const diskDetails = newlyFailedDisks.map(p => 
-                `- /dev/${p.name} (Total: ${p.total.toFixed(1)}G, Used: ${p.used.toFixed(1)}G (${(p.used * 100 / p.total).toFixed(1)}%), Temp: ${p.temperature}°C, Power On Hours: ${p.powerOnHours.toLocaleString()}, Read Errors: ${p.readErrors}, Write Errors: ${p.writeErrors})`
+                `- /dev/${p.name} (Total: ${p.total.toFixed(1)}G, Used: ${p.used.toFixed(1)}G (${(p.used * 100 / p.total).toFixed(1)}%), Temp: ${((p.temperature * 9/5) + 32).toFixed(0)}°F, Power On Hours: ${p.powerOnHours.toLocaleString()}, Read Errors: ${p.readErrors}, Write Errors: ${p.writeErrors})`
             ).join('\n');
 
             const prompt = `The following disk(s) on my Ubuntu server are reporting a 'failing' status. Here is the latest available health data:\n\n${diskDetails}\n\nThis is a critical hardware alert. Please explain the probable causes based on this data, provide diagnostic steps (like using smartctl) to investigate these failures, and recommend a course of action to prevent data loss.`;
@@ -152,7 +152,7 @@ const DiskPanel: React.FC<DiskPanelProps> = ({ onAskAI }) => {
               </div>
               <div className="flex justify-between items-center text-xs text-text-muted pt-1">
                 <span title="Temperature">
-                  Temp: <span className={partition.temperature > 60 ? 'text-yellow font-semibold' : 'text-text-main'}>{partition.temperature}°C</span>
+                  Temp: <span className={partition.temperature > 60 ? 'text-yellow font-semibold' : 'text-text-main'}>{((partition.temperature * 9/5) + 32).toFixed(0)}°F</span>
                 </span>
                 <span title="Power On Hours">
                   POH: <span className="text-text-main">{partition.powerOnHours.toLocaleString()}</span>

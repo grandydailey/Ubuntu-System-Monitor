@@ -1,77 +1,106 @@
 import React, { useState, useEffect } from 'react';
 import Panel from './Panel';
-import { ArrowUpIcon, ArrowDownIcon } from './icons';
+import { RefreshIcon } from './icons';
 
-// Helper to format bytes into KB, MB, GB
-const formatBytes = (bytes: number, decimals = 2): string => {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  if (i >= sizes.length) return '0 Bytes';
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+type ServiceStatus = 'active' | 'down' | 'error' | 'restarting';
+
+interface Service {
+  name: string;
+  status: ServiceStatus;
+}
+
+const statusConfig: { [key in ServiceStatus]: { dotClass: string; textClass: string; label: string } } = {
+  active: { dotClass: 'bg-green', textClass: 'text-green', label: 'Active' },
+  down: { dotClass: 'bg-red', textClass: 'text-red', label: 'Down' },
+  error: { dotClass: 'bg-yellow', textClass: 'text-yellow', label: 'Error' },
+  restarting: { dotClass: 'bg-primary animate-pulse', textClass: 'text-primary', label: 'Restarting' },
 };
 
 const NetworkPanel: React.FC = () => {
-  const [downSpeed, setDownSpeed] = useState(0);
-  const [upSpeed, setUpSpeed] = useState(0);
-  const [totalDown, setTotalDown] = useState(0);
-  const [totalUp, setTotalUp] = useState(0);
+  const [services, setServices] = useState<Service[]>([
+    { name: 'Apache2', status: 'active' },
+    { name: 'MySQL', status: 'active' },
+    { name: 'UFW', status: 'active' },
+    { name: 'SSH', status: 'active' },
+    { name: 'FTP', status: 'down' },
+  ]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      // Simulate network traffic (in bytes per second)
-      const currentDown = Math.random() * 2 * 1024 * 1024; // 0 to 2 MB/s
-      const currentUp = Math.random() * 512 * 1024;       // 0 to 512 KB/s
-      
-      setDownSpeed(currentDown);
-      setUpSpeed(currentUp);
+    const serviceInterval = setInterval(() => {
+        setServices(prevServices => 
+            prevServices.map(service => {
+                if (service.status === 'restarting') return service; // Don't interrupt restarts
 
-      // Update totals, assuming interval is 2 seconds
-      setTotalDown(prev => prev + currentDown * 2);
-      setTotalUp(prev => prev + currentUp * 2);
-    }, 2000);
+                const rand = Math.random();
+                let newStatus = service.status;
+                
+                // 5% chance of state change per interval
+                if (rand < 0.05) { 
+                    if (service.status === 'active') {
+                        newStatus = 'down';
+                    } else if (service.status === 'down') {
+                        newStatus = Math.random() < 0.8 ? 'active' : 'error';
+                    } else { // status is 'error'
+                        newStatus = Math.random() < 0.7 ? 'active' : 'error';
+                    }
+                }
+                return { ...service, status: newStatus };
+            })
+        );
+    }, 3500); // Check services every 3.5 seconds
 
-    return () => clearInterval(interval);
+    return () => {
+        clearInterval(serviceInterval);
+    };
   }, []);
 
-  const StatLine: React.FC<{
-    icon: React.ReactNode;
-    label: string;
-    speed: number;
-    total: number;
-    colorClass: string;
-  }> = ({ icon, label, speed, total, colorClass }) => (
-    <div className="flex items-center justify-between font-mono">
-      <div className="flex items-center space-x-2">
-        {icon}
-        <span className="text-text-main">{label}</span>
-      </div>
-      <div className="text-right">
-        <p className={`${colorClass} font-semibold`}>{`${formatBytes(speed)}/s`}</p>
-        <p className="text-xs text-text-muted">{`Total: ${formatBytes(total)}`}</p>
-      </div>
-    </div>
-  );
+  const handleRestartService = (serviceName: string) => {
+    setServices(prev => prev.map(s => {
+        if (s.name === serviceName && (s.status === 'down' || s.status === 'error')) {
+            return { ...s, status: 'restarting' };
+        }
+        return s;
+    }));
+
+    setTimeout(() => {
+        setServices(prev => prev.map(s => {
+            if (s.name === serviceName && s.status === 'restarting') {
+                const success = Math.random() < 0.8; // 80% success rate
+                return { ...s, status: success ? 'active' : 'error' };
+            }
+            return s;
+        }));
+    }, 1500); // 1.5-second restart delay
+  };
 
   return (
-    <Panel title="./net_monitor">
-      <div className="p-3 space-y-4 flex flex-col justify-around h-full">
-        <StatLine
-          icon={<ArrowDownIcon className="text-green" />}
-          label="Download"
-          speed={downSpeed}
-          total={totalDown}
-          colorClass="text-green"
-        />
-        <StatLine
-          icon={<ArrowUpIcon className="text-yellow" />}
-          label="Upload"
-          speed={upSpeed}
-          total={totalUp}
-          colorClass="text-yellow"
-        />
+    <Panel title="systemctl --status-all">
+      <div className="p-3 h-full overflow-y-auto">
+        <div className="space-y-2">
+            {services.map(service => {
+                const config = statusConfig[service.status];
+                const isRestartable = service.status === 'down' || service.status === 'error';
+                
+                return (
+                    <button 
+                        key={service.name}
+                        onClick={() => handleRestartService(service.name)}
+                        disabled={!isRestartable}
+                        className={`w-full bg-background/50 p-2 rounded-md text-sm font-mono flex items-center justify-between space-x-2 overflow-hidden transition-colors duration-200 ${isRestartable ? 'cursor-pointer hover:bg-panel-header' : 'cursor-default'}`}
+                        aria-label={isRestartable ? `Restart ${service.name}` : `${service.name} is ${service.status}`}
+                    >
+                        <div className="flex items-center space-x-2">
+                            <span className={`h-2.5 w-2.5 rounded-full flex-shrink-0 ${config.dotClass}`}></span>
+                            <span className="text-text-secondary truncate">{service.name}</span>
+                        </div>
+                        <div className={`font-bold ${config.textClass} flex items-center space-x-1.5`}>
+                           {service.status === 'restarting' && <RefreshIcon className="animate-spin" />}
+                           <span>{config.label}</span>
+                        </div>
+                    </button>
+                )
+            })}
+        </div>
       </div>
     </Panel>
   );
