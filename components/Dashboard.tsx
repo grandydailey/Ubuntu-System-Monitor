@@ -2,7 +2,7 @@ import React from 'react';
 import SystemHealthPanel from './SystemHealthPanel';
 import LogTailPanel from './LogTailPanel';
 import LogQueryPanel from './LogQueryPanel';
-import CavaPanel from './CavaPanel';
+import ChatPanel from './ChatPanel';
 import DiskPanel from './DiskPanel';
 import NetworkPanel from './NetworkPanel';
 
@@ -21,7 +21,7 @@ const Dashboard: React.FC = () => {
             <NetworkPanel />
           </div>
           <div className="flex-1 overflow-hidden">
-            <CavaPanel />
+            <ChatPanel />
           </div>
         </div>
         <div className="lg:col-span-1 h-full overflow-hidden">

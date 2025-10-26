@@ -110,3 +110,10 @@ export const SpeakerOffIcon: React.FC<{className?: string}> = ({ className }) =>
         <line x1="17" y1="9" x2="23" y2="15"></line>
     </svg>
 );
+
+export const SendIcon: React.FC<{ className?: string }> = ({ className }) => (
+    <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+    </svg>
+);
