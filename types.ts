@@ -4,6 +4,10 @@ export interface DiskPartition {
   used: number;
   total: number;
   status: 'ok' | 'failing';
+  temperature: number;
+  powerOnHours: number;
+  readErrors: number;
+  writeErrors: number;
 }
 
 export interface SystemStats {
