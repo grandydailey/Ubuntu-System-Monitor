@@ -3,6 +3,7 @@ export interface DiskPartition {
   name: string;
   used: number;
   total: number;
+  status: 'ok' | 'failing';
 }
 
 export interface SystemStats {

@@ -26,6 +26,16 @@ export const DiskIcon: React.FC = () => (
   </svg>
 );
 
+export const FailingDiskIcon: React.FC = () => (
+    <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-red-400">
+        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+        <path d="M21 5v14a9 3 0 0 1-18 0V5" />
+        <path d="M3 5a9 3 0 0 1 18 0" />
+        <path d="m9 12 6 6" strokeWidth="2" strokeLinecap="round" />
+        <path d="m15 12-6 6" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+);
+
 export const WifiIcon: React.FC = () => (
   <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor">
     <path d="M5 12.55a11 11 0 0 1 14.08 0" />
