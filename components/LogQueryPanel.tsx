@@ -1,13 +1,42 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Panel from './Panel';
 import { SYSLOG_DATA } from '../data/mockLogs';
+
+const NUM_BARS = 32; // Cava config
 
 const LogQueryPanel: React.FC = () => {
   const [query, setQuery] = useState('');
 
+  // Cava visualizer logic
+  const [bars, setBars] = useState<number[]>(new Array(NUM_BARS).fill(0));
+
+  useEffect(() => {
+    // Only run the animation if the query is empty
+    if (query) return;
+
+    const interval = setInterval(() => {
+      setBars(prevBars => {
+        return prevBars.map(bar => {
+          const randomChange = (Math.random() - 0.4) * 25;
+          const newHeight = Math.max(0, Math.min(100, bar + randomChange));
+          return newHeight;
+        });
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [query]); // Effect depends on query to start/stop the animation
+
+  const getBarColor = (height: number) => {
+    if (height > 85) return 'from-red-500 to-yellow-500';
+    if (height > 60) return 'from-yellow-500 to-green-500';
+    return 'from-green-500 to-cyan-500';
+  };
+  // End Cava logic
+
   const filteredLogs = useMemo(() => {
     if (!query) {
-      return []; // Show no lines by default
+      return []; // No results when query is empty
     }
     const lowerCaseQuery = query.toLowerCase();
     return SYSLOG_DATA.filter(line => line.toLowerCase().includes(lowerCaseQuery)).slice(-100);
@@ -32,7 +61,7 @@ const LogQueryPanel: React.FC = () => {
   };
   
   return (
-    <Panel title="grep [query] /var/log/syslog" className="flex flex-col">
+    <Panel title="grep [query] /var/log/syslog" className="flex flex-col !bg-gray-900/50 backdrop-blur-sm">
       <div className="p-2 border-b border-gray-700">
         <div className="flex items-center space-x-2">
           <input
@@ -54,19 +83,33 @@ const LogQueryPanel: React.FC = () => {
         </div>
       </div>
       <div className="p-2 flex-grow overflow-y-auto text-xs">
-          {filteredLogs.length > 0 ? (
-            filteredLogs.map((line, index) => (
-              <div 
-                key={index} 
-                className={`whitespace-pre-wrap break-all px-2 py-0.5 rounded ${index % 2 === 0 ? 'bg-gray-800/50' : ''}`}
-              >
-                {highlightQuery(line)}
-              </div>
-            ))
+          {query ? (
+            filteredLogs.length > 0 ? (
+              filteredLogs.map((line, index) => (
+                <div 
+                  key={index} 
+                  className={`whitespace-pre-wrap break-all px-2 py-0.5 rounded ${index % 2 === 0 ? 'bg-gray-800/50' : ''}`}
+                >
+                  {highlightQuery(line)}
+                </div>
+              ))
+            ) : (
+              <span className="text-gray-500 px-2">
+                {`No results for "${query}"`}
+              </span>
+            )
           ) : (
-            <span className="text-gray-500 px-2">
-              {query ? `No results for "${query}"` : 'Awaiting query...'}
-            </span>
+            <div className="h-full flex items-end justify-center space-x-1 overflow-hidden">
+              {bars.map((height, index) => (
+                <div
+                  key={index}
+                  className={`w-full rounded-t-sm transition-all duration-100 ease-linear bg-gradient-to-t ${getBarColor(height)}`}
+                  style={{ 
+                    height: `${height}%`,
+                  }}
+                />
+              ))}
+            </div>
           )}
       </div>
     </Panel>

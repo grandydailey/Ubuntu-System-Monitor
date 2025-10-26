@@ -26,18 +26,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
     }, 500);
   };
 
-  // FIX: The original base64 string was corrupted, leading to multiple parsing and type errors.
-  // It has been replaced with a valid placeholder (a 1x1 transparent GIF).
-  const logoSrc = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
-
   return (
     <div className="flex items-center justify-center h-full p-4">
       <div className="w-full max-w-md">
-        <img 
-            src={logoSrc} 
-            alt="Application Logo" 
-            className="w-24 h-24 rounded-full mx-auto mb-4 object-cover"
-        />
         <Panel title="Authentication Required" className="!bg-gray-900/80 backdrop-blur-sm">
           <form onSubmit={handleLogin} className="p-6 space-y-4">
             <div>

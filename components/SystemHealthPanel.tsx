@@ -11,7 +11,11 @@ interface RawError {
   timestamp: string;
 }
 
-const SystemHealthPanel: React.FC = () => {
+interface SystemHealthPanelProps {
+    onAskAI?: (query: string) => void;
+}
+
+const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({ onAskAI }) => {
   const [stats, setStats] = useState<SystemStats>({
     temp: 55,
     memory: { used: 4.2, total: 16.0 },
@@ -191,6 +195,7 @@ const SystemHealthPanel: React.FC = () => {
         isOpen={isModalOpen}
         errors={unacknowledgedErrors}
         onClose={handleAcknowledgeErrors}
+        onAskAI={onAskAI}
       />
     </>
   );
