@@ -46,7 +46,7 @@ const Dashboard: React.FC = () => {
           </div>
         </div>
         <div className="lg:col-span-1 h-full overflow-hidden">
-          <LogTailPanel />
+          <LogTailPanel onAskAI={handlePrefillAI} />
         </div>
         <div className="lg:col-span-1 h-full overflow-hidden">
           <LogQueryPanel />

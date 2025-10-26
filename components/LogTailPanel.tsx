@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Panel from './Panel';
 import { AUTH_LOG_SAMPLE, APACHE_LOG_SAMPLE } from '../data/mockLogs';
-import { SpeakerOnIcon, SpeakerOffIcon } from './icons';
+import { SpeakerOnIcon, SpeakerOffIcon, PauseIcon, PlayIcon, SparklesIcon } from './icons';
 
 type LogSource = 'auth' | 'apache';
 type LogLine = {
@@ -9,11 +9,15 @@ type LogLine = {
   type: 'normal' | 'error' | 'critical';
 };
 
+interface LogTailPanelProps {
+    onAskAI?: (query: string) => void;
+}
 
-const LogTailPanel: React.FC = () => {
+const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
   const [activeLog, setActiveLog] = useState<LogSource | null>(null);
   const [logLines, setLogLines] = useState<LogLine[]>([]);
   const [isMuted, setIsMuted] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
   const audioContextRef = useRef<AudioContext | null>(null);
 
   const playAlertSound = useCallback(() => {
@@ -60,16 +64,15 @@ const LogTailPanel: React.FC = () => {
     oscillator.stop(context.currentTime + 0.3);
   }, [isMuted]);
 
-  // Effect to clear logs ONLY when the source changes
   useEffect(() => {
     if (activeLog) {
       setLogLines([]);
+      setIsPaused(false);
     }
   }, [activeLog]);
 
-  // Effect for the log generation interval
   useEffect(() => {
-    if (!activeLog) return;
+    if (!activeLog || isPaused) return;
 
     const interval = window.setInterval(() => {
       const source = activeLog === 'auth' ? AUTH_LOG_SAMPLE : APACHE_LOG_SAMPLE;
@@ -101,7 +104,7 @@ const LogTailPanel: React.FC = () => {
     }, 800);
 
     return () => clearInterval(interval);
-  }, [activeLog, playAlertSound, playIntrusionAlertSound]);
+  }, [activeLog, isPaused, playAlertSound, playIntrusionAlertSound]);
 
   const handleSelectLog = (source: LogSource) => {
     if (!audioContextRef.current && typeof window !== 'undefined') {
@@ -132,17 +135,28 @@ const LogTailPanel: React.FC = () => {
             apache2/access.log
             </button>
         </div>
-        <button
-            onClick={() => setIsMuted(!isMuted)}
-            className={`p-2 rounded-md transition-colors duration-200 ${isMuted ? 'text-gray-500 bg-gray-800 hover:bg-gray-700' : 'text-cyan-400 bg-gray-700 hover:bg-gray-600'}`}
-            aria-label={isMuted ? 'Unmute alerts' : 'Mute alerts'}
-        >
-            {isMuted ? <SpeakerOffIcon /> : <SpeakerOnIcon />}
-        </button>
+        <div className="flex items-center space-x-2">
+            <button
+                onClick={() => setIsPaused(!isPaused)}
+                disabled={!activeLog}
+                className={`p-2 rounded-md transition-colors duration-200 ${isPaused ? 'text-green-400 bg-gray-700 hover:bg-gray-600' : 'text-yellow-400 bg-gray-700 hover:bg-gray-600'} disabled:text-gray-600 disabled:bg-gray-800 disabled:cursor-not-allowed`}
+                aria-label={isPaused ? 'Resume log tailing' : 'Pause log tailing'}
+            >
+                {isPaused ? <PlayIcon /> : <PauseIcon />}
+            </button>
+            <button
+                onClick={() => setIsMuted(!isMuted)}
+                className={`p-2 rounded-md transition-colors duration-200 ${isMuted ? 'text-gray-500 bg-gray-800 hover:bg-gray-700' : 'text-cyan-400 bg-gray-700 hover:bg-gray-600'}`}
+                aria-label={isMuted ? 'Unmute alerts' : 'Mute alerts'}
+            >
+                {isMuted ? <SpeakerOffIcon /> : <SpeakerOnIcon />}
+            </button>
+        </div>
       </div>
       <div className="p-2 flex-grow overflow-y-auto text-xs">
         {logLines.length > 0 
           ? logLines.map((line, index) => {
+              const isError = line.type === 'error' || line.type === 'critical';
               let lineClass = 'text-gray-300';
               if (line.type === 'error') lineClass = 'text-yellow-400';
               if (line.type === 'critical') lineClass = 'text-red-500 font-bold';
@@ -150,13 +164,22 @@ const LogTailPanel: React.FC = () => {
               return (
                 <div 
                   key={index}
-                  className={`whitespace-pre-wrap break-all px-2 py-0.5 rounded ${index % 2 === 0 ? 'bg-gray-800/50' : ''} ${lineClass}`}
+                  className={`relative group whitespace-pre-wrap break-all px-2 py-0.5 rounded ${index % 2 === 0 ? 'bg-gray-800/50' : ''}`}
                 >
-                  {line.text}
+                  <span className={lineClass}>{line.text}</span>
+                  {isError && onAskAI && (
+                    <button
+                        onClick={() => onAskAI(line.text)}
+                        className="absolute top-1/2 right-1 transform -translate-y-1/2 p-1 text-cyan-400 bg-gray-900 rounded-full opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100"
+                        title="Ask AI about this error"
+                    >
+                        <SparklesIcon />
+                    </button>
+                  )}
                 </div>
               );
             })
-          : <span className="text-gray-500 px-2">Select a log file to tail...</span>}
+          : <span className="text-gray-500 px-2">{activeLog ? (isPaused ? `Tailing paused. Press play to resume...` : 'Waiting for log entries...') : 'Select a log file to tail...'}</span>}
       </div>
     </Panel>
   );
