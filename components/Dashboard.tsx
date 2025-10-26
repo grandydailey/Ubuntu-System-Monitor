@@ -13,12 +13,6 @@ const Dashboard: React.FC = () => {
         <SystemHealthPanel />
       </header>
       <main className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-2 md:gap-4 overflow-hidden">
-        <div className="lg:col-span-1 h-full overflow-hidden">
-          <LogTailPanel />
-        </div>
-        <div className="lg:col-span-1 h-full overflow-hidden">
-          <LogQueryPanel />
-        </div>
         <div className="lg:col-span-1 h-full flex flex-col gap-2 md:gap-4 overflow-hidden">
           <div className="flex-1 overflow-hidden">
             <DiskPanel />
@@ -29,6 +23,12 @@ const Dashboard: React.FC = () => {
           <div className="flex-1 overflow-hidden">
             <CavaPanel />
           </div>
+        </div>
+        <div className="lg:col-span-1 h-full overflow-hidden">
+          <LogTailPanel />
+        </div>
+        <div className="lg:col-span-1 h-full overflow-hidden">
+          <LogQueryPanel />
         </div>
       </main>
     </div>
