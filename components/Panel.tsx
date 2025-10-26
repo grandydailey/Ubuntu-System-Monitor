@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface PanelProps {
@@ -10,9 +9,9 @@ interface PanelProps {
 
 const Panel: React.FC<PanelProps> = ({ title, children, className = '', titleClassName = '' }) => {
   return (
-    <div className={`bg-gray-900 border border-gray-700 rounded-md h-full flex flex-col overflow-hidden ${className}`}>
-      <h2 className={`text-cyan-400 p-2 border-b border-gray-700 flex-shrink-0 ${titleClassName}`}>
-        $ {title}
+    <div className={`bg-panel-bg border border-border rounded-lg h-full flex flex-col overflow-hidden shadow-lg ${className}`}>
+      <h2 className={`text-primary font-mono font-medium p-2 border-b border-border flex-shrink-0 ${titleClassName}`}>
+        <span className="text-text-muted">$ </span>{title}
       </h2>
       {children}
     </div>

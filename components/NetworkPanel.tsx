@@ -43,14 +43,14 @@ const NetworkPanel: React.FC = () => {
     total: number;
     colorClass: string;
   }> = ({ icon, label, speed, total, colorClass }) => (
-    <div className="flex items-center justify-between">
+    <div className="flex items-center justify-between font-mono">
       <div className="flex items-center space-x-2">
         {icon}
-        <span className="text-gray-300">{label}</span>
+        <span className="text-text-main">{label}</span>
       </div>
       <div className="text-right">
         <p className={`${colorClass} font-semibold`}>{`${formatBytes(speed)}/s`}</p>
-        <p className="text-xs text-gray-500">{`Total: ${formatBytes(total)}`}</p>
+        <p className="text-xs text-text-muted">{`Total: ${formatBytes(total)}`}</p>
       </div>
     </div>
   );
@@ -59,18 +59,18 @@ const NetworkPanel: React.FC = () => {
     <Panel title="./net_monitor">
       <div className="p-3 space-y-4 flex flex-col justify-around h-full">
         <StatLine
-          icon={<ArrowDownIcon className="text-green-400" />}
+          icon={<ArrowDownIcon className="text-green" />}
           label="Download"
           speed={downSpeed}
           total={totalDown}
-          colorClass="text-green-400"
+          colorClass="text-green"
         />
         <StatLine
-          icon={<ArrowUpIcon className="text-yellow-400" />}
+          icon={<ArrowUpIcon className="text-yellow" />}
           label="Upload"
           speed={upSpeed}
           total={totalUp}
-          colorClass="text-yellow-400"
+          colorClass="text-yellow"
         />
       </div>
     </Panel>

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Panel from './Panel';
+import { LogoIcon } from './icons';
 
 interface LoginPageProps {
   onLoginSuccess: () => void;
@@ -29,10 +30,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
   return (
     <div className="flex items-center justify-center h-full p-4">
       <div className="w-full max-w-md">
-        <Panel title="Authentication Required" className="!bg-gray-900/80 backdrop-blur-sm">
+        <div className="flex justify-center mb-6">
+            <LogoIcon className="w-24 h-24 rounded-full shadow-lg"/>
+        </div>
+        <Panel title="Authentication Required" className="!bg-panel-bg/80 backdrop-blur-sm">
           <form onSubmit={handleLogin} className="p-6 space-y-4">
             <div>
-              <label htmlFor="username" className="block mb-2 text-cyan-400">
+              <label htmlFor="username" className="block mb-2 text-primary font-mono">
                 Username:
               </label>
               <input
@@ -41,25 +45,25 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLoginSuccess }) => {
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 autoFocus
-                className={`w-full bg-gray-800 border rounded-md px-3 py-2 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 ${
+                className={`w-full bg-background border rounded-md px-3 py-2 text-text-main placeholder-text-muted focus:outline-none focus:ring-2 font-mono ${
                   error
-                    ? 'border-red-500 focus:ring-red-500'
-                    : 'border-gray-600 focus:ring-cyan-500'
+                    ? 'border-red focus:ring-red'
+                    : 'border-border focus:ring-primary'
                 }`}
               />
-              {error && <p className="mt-2 text-sm text-red-400">{error}</p>}
+              {error && <p className="mt-2 text-sm text-red font-mono">{error}</p>}
             </div>
             <button
               type="submit"
               disabled={isLoading || !username}
-              className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-2 px-4 rounded transition-colors duration-200 disabled:bg-gray-600 disabled:cursor-not-allowed"
+              className="w-full bg-primary hover:bg-primary-focus text-black font-bold py-2 px-4 rounded-md transition-colors duration-200 disabled:bg-gray-600 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Authenticating...' : 'Login'}
             </button>
           </form>
         </Panel>
-         <p className="text-center text-xs text-gray-600 mt-4">
-          Ubuntu System Monitor v1.0.0
+         <p className="text-center text-xs text-text-muted mt-4 font-mono">
+          Namour System Monitor v2.0.0
         </p>
       </div>
     </div>

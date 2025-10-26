@@ -114,7 +114,7 @@ const ChatbotPanel: React.FC<ChatbotPanelProps> = ({ initialQuery, onQueryHandle
       }
       const code = match[2];
       parts.push(
-        <pre key={`code-${match.index}`} className="bg-black/50 p-2 my-2 rounded-md text-sm text-green-300 overflow-x-auto">
+        <pre key={`code-${match.index}`} className="bg-black/50 p-2 my-2 rounded-md text-sm text-green overflow-x-auto font-mono">
           <code>{code}</code>
         </pre>
       );
@@ -127,7 +127,7 @@ const ChatbotPanel: React.FC<ChatbotPanelProps> = ({ initialQuery, onQueryHandle
     
     // Add a blinking cursor to the last model message while loading
     if (isLoading && messages[messages.length - 1]?.role === 'model' && messages[messages.length-1]?.content === content) {
-        parts.push(<span key="cursor" className="inline-block w-2 h-4 ml-1 align-middle bg-green-400 animate-pulse"></span>);
+        parts.push(<span key="cursor" className="inline-block w-2 h-4 ml-1 align-middle bg-green animate-pulse"></span>);
     }
 
     return parts;
@@ -135,22 +135,22 @@ const ChatbotPanel: React.FC<ChatbotPanelProps> = ({ initialQuery, onQueryHandle
 
   return (
     <Panel title="./ai_assistant --ask" className="flex flex-col">
-      <div ref={chatHistoryRef} className="flex-grow p-2 overflow-y-auto space-y-4 text-xs">
+      <div ref={chatHistoryRef} className="flex-grow p-2 overflow-y-auto space-y-4 text-sm">
         {messages.map((msg, index) => (
           <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`p-2 rounded-lg max-w-xs md:max-w-md lg:max-w-sm whitespace-pre-wrap ${msg.role === 'user' ? 'bg-cyan-900/50 text-cyan-200' : 'bg-gray-800 text-gray-300'}`}>
+            <div className={`p-3 rounded-lg max-w-xs md:max-w-md lg:max-w-sm whitespace-pre-wrap ${msg.role === 'user' ? 'bg-primary/80 text-black' : 'bg-panel-header text-text-main'}`}>
               {renderMessageContent(msg.content)}
             </div>
           </div>
         ))}
          {messages.length === 0 && !isLoading && (
-            <div className="text-center text-gray-500 pt-8">
+            <div className="text-center text-text-muted pt-8">
                 <p>Ask about system errors or performance tuning.</p>
-                <p className="mt-2">e.g., "How do I check for memory leaks?"</p>
+                <p className="mt-2 text-xs">e.g., "How do I check for memory leaks?"</p>
             </div>
         )}
       </div>
-      <form onSubmit={handleSubmit} className="p-2 border-t border-gray-700">
+      <form onSubmit={handleSubmit} className="p-2 border-t border-border">
         <div className="flex items-center space-x-2">
           <input
             ref={inputRef}
@@ -159,12 +159,12 @@ const ChatbotPanel: React.FC<ChatbotPanelProps> = ({ initialQuery, onQueryHandle
             onChange={(e) => setInput(e.target.value)}
             placeholder={isLoading ? "Generating response..." : "Ask the AI assistant..."}
             disabled={isLoading}
-            className="flex-grow bg-gray-800 border border-gray-600 rounded-md px-3 py-1 text-gray-200 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 disabled:bg-gray-700"
+            className="flex-grow bg-background border border-border rounded-md px-3 py-1 text-text-main placeholder-text-muted focus:outline-none focus:ring-2 focus:ring-primary disabled:bg-panel-header"
           />
           <button
             type="submit"
             disabled={isLoading || !input}
-            className="bg-cyan-600 hover:bg-cyan-700 text-white font-bold py-1 px-3 rounded-md transition-colors duration-200 text-sm disabled:bg-gray-600 disabled:cursor-not-allowed"
+            className="bg-primary hover:bg-primary-focus text-black font-bold py-1 px-3 rounded-md transition-colors duration-200 text-sm disabled:bg-gray-600 disabled:cursor-not-allowed"
           >
             Send
           </button>

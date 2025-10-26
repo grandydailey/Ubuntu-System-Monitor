@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Panel from './Panel';
 import { DiskIcon, AlertTriangleIcon, FailingDiskIcon, SparklesIcon } from './icons';
@@ -11,25 +10,25 @@ interface DiskPanelProps {
 const StatItem: React.FC<{ icon: React.ReactNode; label: string; value: string; isWarning?: boolean; }> = ({ icon, label, value, isWarning }) => (
   <div className="flex items-center space-x-2 text-xs">
     {icon}
-    <span>{label}:</span>
-    <span className={isWarning ? "text-red-400" : "text-green-400"}>{value}</span>
+    <span className="text-text-secondary">{label}:</span>
+    <span className={isWarning ? "text-red" : "text-green"}>{value}</span>
   </div>
 );
 
 const ProgressBar: React.FC<{ percent: number; isFailing?: boolean; }> = ({ percent, isFailing }) => {
-  let bgColor = 'bg-green-500';
+  let bgColor = 'bg-green';
   if (isFailing) {
-    bgColor = 'bg-red-600';
+    bgColor = 'bg-red';
   } else if (percent > 95) {
-    bgColor = 'bg-red-500';
+    bgColor = 'bg-red';
   } else if (percent > 85) {
-    bgColor = 'bg-yellow-500';
+    bgColor = 'bg-yellow';
   }
   
   const width = isFailing ? 100 : percent;
 
   return (
-    <div className="w-full bg-gray-700 rounded-full h-1.5">
+    <div className="w-full bg-border rounded-full h-1.5">
       <div className={`${bgColor} h-1.5 rounded-full`} style={{ width: `${width}%` }}></div>
     </div>
   );
@@ -115,8 +114,8 @@ const DiskPanel: React.FC<DiskPanelProps> = ({ onAskAI }) => {
   }, [onAskAI]);
 
   return (
-    <Panel title="./df -h --show-health" className="!bg-gray-900/75 backdrop-blur-sm">
-      <div className="p-2 space-y-1 overflow-y-auto flex-grow">
+    <Panel title="./df -h --show-health">
+      <div className="p-2 space-y-1 overflow-y-auto flex-grow font-mono">
         {diskStats.map((partition, index) => {
           const diskPercent = (partition.used / partition.total) * 100;
           const isHighUsage = diskPercent > 85 && diskPercent <= 95;
@@ -127,7 +126,7 @@ const DiskPanel: React.FC<DiskPanelProps> = ({ onAskAI }) => {
           const PartitionIcon = isFailing ? FailingDiskIcon : DiskIcon;
           
           const containerClasses = `space-y-1 p-2 rounded-md transition-colors duration-300 ${
-            isFailing ? 'bg-red-900/40 animate-pulse' : (index % 2 === 0 ? 'bg-gray-800/30' : '')
+            isFailing ? 'bg-red/20 animate-pulse' : (index % 2 === 0 ? 'bg-background/30' : '')
           }`;
 
           return (
@@ -140,29 +139,29 @@ const DiskPanel: React.FC<DiskPanelProps> = ({ onAskAI }) => {
                   isWarning={isCriticalUsage || isFailing}
                 />
                 {isDiagnosing ? (
-                  <div className="flex items-center space-x-1 text-cyan-400 text-xs animate-pulse">
+                  <div className="flex items-center space-x-1 text-primary text-xs animate-pulse">
                       <SparklesIcon className="w-3 h-3"/>
                       <span>AI Diagnosing...</span>
                   </div>
                 ) : !isFailing && (isHighUsage || isCriticalUsage) && (
-                  <AlertTriangleIcon className={isCriticalUsage ? "text-red-500" : "text-yellow-500"} />
+                  <AlertTriangleIcon className={isCriticalUsage ? "text-red" : "text-yellow"} />
                 )}
               </div>
               <div title={isFailing ? 'Disk health critical! Data at risk.' : `Used: ${partition.used.toFixed(1)}G / Total: ${partition.total.toFixed(1)}G`}>
                 <ProgressBar percent={diskPercent} isFailing={isFailing} />
               </div>
-              <div className="flex justify-between items-center text-xs text-gray-400 pt-1">
+              <div className="flex justify-between items-center text-xs text-text-muted pt-1">
                 <span title="Temperature">
-                  Temp: <span className={partition.temperature > 60 ? 'text-yellow-400 font-semibold' : 'text-gray-300'}>{partition.temperature}°C</span>
+                  Temp: <span className={partition.temperature > 60 ? 'text-yellow font-semibold' : 'text-text-main'}>{partition.temperature}°C</span>
                 </span>
                 <span title="Power On Hours">
-                  POH: <span className="text-gray-300">{partition.powerOnHours.toLocaleString()}</span>
+                  POH: <span className="text-text-main">{partition.powerOnHours.toLocaleString()}</span>
                 </span>
                 <span title="Read Errors">
-                  R.Err: <span className={partition.readErrors > 0 ? 'text-yellow-400 font-semibold' : 'text-gray-300'}>{partition.readErrors}</span>
+                  R.Err: <span className={partition.readErrors > 0 ? 'text-yellow font-semibold' : 'text-text-main'}>{partition.readErrors}</span>
                 </span>
                 <span title="Write Errors">
-                  W.Err: <span className={partition.writeErrors > 0 ? 'text-yellow-400 font-semibold' : 'text-gray-300'}>{partition.writeErrors}</span>
+                  W.Err: <span className={partition.writeErrors > 0 ? 'text-yellow font-semibold' : 'text-text-main'}>{partition.writeErrors}</span>
                 </span>
               </div>
             </div>

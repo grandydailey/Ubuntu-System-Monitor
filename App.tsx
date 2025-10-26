@@ -28,7 +28,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <div className="bg-black text-gray-300 font-mono text-sm h-screen">
+    <div className="bg-background text-text-main font-sans text-sm h-screen">
       {renderContent()}
     </div>
   );

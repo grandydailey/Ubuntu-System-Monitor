@@ -118,15 +118,15 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
   };
 
   const getButtonClass = (source: LogSource) => 
-    `px-4 py-2 rounded-md transition-colors duration-200 ${
+    `px-4 py-2 rounded-md transition-colors duration-200 font-medium font-sans ${
       activeLog === source 
-        ? 'bg-cyan-500 text-black' 
-        : 'bg-gray-700 hover:bg-gray-600'
+        ? 'bg-primary text-black' 
+        : 'bg-panel-header hover:bg-border'
     }`;
 
   return (
     <Panel title="tail -f [log_file]" className="flex flex-col">
-      <div className="p-2 border-b border-gray-700 flex justify-between items-center">
+      <div className="p-2 border-b border-border flex justify-between items-center">
         <div className="flex space-x-2">
             <button onClick={() => handleSelectLog('auth')} className={getButtonClass('auth')}>
             auth.log
@@ -139,38 +139,38 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
             <button
                 onClick={() => setIsPaused(!isPaused)}
                 disabled={!activeLog}
-                className={`p-2 rounded-md transition-colors duration-200 ${isPaused ? 'text-green-400 bg-gray-700 hover:bg-gray-600' : 'text-yellow-400 bg-gray-700 hover:bg-gray-600'} disabled:text-gray-600 disabled:bg-gray-800 disabled:cursor-not-allowed`}
+                className={`p-2 rounded-md transition-colors duration-200 bg-panel-header hover:bg-border ${isPaused ? 'text-green' : 'text-yellow'} disabled:text-text-muted disabled:bg-gray-800 disabled:cursor-not-allowed`}
                 aria-label={isPaused ? 'Resume log tailing' : 'Pause log tailing'}
             >
                 {isPaused ? <PlayIcon /> : <PauseIcon />}
             </button>
             <button
                 onClick={() => setIsMuted(!isMuted)}
-                className={`p-2 rounded-md transition-colors duration-200 ${isMuted ? 'text-gray-500 bg-gray-800 hover:bg-gray-700' : 'text-cyan-400 bg-gray-700 hover:bg-gray-600'}`}
+                className={`p-2 rounded-md transition-colors duration-200 bg-panel-header hover:bg-border ${isMuted ? 'text-text-muted' : 'text-primary'}`}
                 aria-label={isMuted ? 'Unmute alerts' : 'Mute alerts'}
             >
                 {isMuted ? <SpeakerOffIcon /> : <SpeakerOnIcon />}
             </button>
         </div>
       </div>
-      <div className="p-2 flex-grow overflow-y-auto text-xs">
+      <div className="p-2 flex-grow overflow-y-auto text-xs font-mono">
         {logLines.length > 0 
           ? logLines.map((line, index) => {
               const isError = line.type === 'error' || line.type === 'critical';
-              let lineClass = 'text-gray-300';
-              if (line.type === 'error') lineClass = 'text-yellow-400';
-              if (line.type === 'critical') lineClass = 'text-red-500 font-bold';
+              let lineClass = 'text-text-secondary';
+              if (line.type === 'error') lineClass = 'text-yellow';
+              if (line.type === 'critical') lineClass = 'text-red font-bold';
               
               return (
                 <div 
                   key={index}
-                  className={`relative group whitespace-pre-wrap break-all px-2 py-0.5 rounded ${index % 2 === 0 ? 'bg-gray-800/50' : ''}`}
+                  className={`relative group whitespace-pre-wrap break-all px-2 py-0.5 rounded ${index % 2 === 0 ? 'bg-background/50' : ''}`}
                 >
                   <span className={lineClass}>{line.text}</span>
                   {isError && onAskAI && (
                     <button
                         onClick={() => onAskAI(line.text)}
-                        className="absolute top-1/2 right-1 transform -translate-y-1/2 p-1 text-cyan-400 bg-gray-900 rounded-full opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100"
+                        className="absolute top-1/2 right-1 transform -translate-y-1/2 p-1 text-primary bg-panel-bg rounded-full opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100"
                         title="Ask AI about this error"
                     >
                         <SparklesIcon />
@@ -179,7 +179,7 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
                 </div>
               );
             })
-          : <span className="text-gray-500 px-2">{activeLog ? (isPaused ? `Tailing paused. Press play to resume...` : 'Waiting for log entries...') : 'Select a log file to tail...'}</span>}
+          : <span className="text-text-muted px-2">{activeLog ? (isPaused ? `Tailing paused. Press play to resume...` : 'Waiting for log entries...') : 'Select a log file to tail...'}</span>}
       </div>
     </Panel>
   );

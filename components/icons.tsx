@@ -1,9 +1,13 @@
 import React from 'react';
 
 const iconProps = {
-  className: "w-5 h-5 text-cyan-400",
+  className: "w-5 h-5 text-primary",
   strokeWidth: 1.5,
 };
+
+export const LogoIcon: React.FC<{className?: string}> = ({className}) => (
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAA+AD4DASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAAUDBAYH/8QAIxAAAQQCAgICAwAAAAAAAAAAAQIDBAUAEQYSITFBEyJRYf/EABgBAAIDAAAAAAAAAAAAAAAAAAEEAgMF/8QAHREAAgICAwEBAAAAAAAAAAAAAAECEQMhEjFBYf/aAAwDAQACEQMRAD8A7aWzNhyXERpMhl9ojYWhYKkn2CNGoE25bixWYsWQ++4rsIQgrUfZAGg+Jc8oXpke3mSo8l5hO6G0r2hSvog/zR9Q+P2XpTNzdyW8l5xtO0N9dgUfoA6H6A0C22wYhW2S0tpQ+UqGx+tE6ACJSlKECpSlAKlKUApSlAKlKUApSlAKlKUApSlAKUpQClKUAqPGlx5aCtxlDrZOttaQrY+xRolAZn45JbmQYz7St7bcQFAn6II0aVFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKA//Z" alt="Namour System Monitor Logo" className={className} />
+);
 
 export const TemperatureIcon: React.FC = () => (
   <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -27,7 +31,7 @@ export const DiskIcon: React.FC = () => (
 );
 
 export const FailingDiskIcon: React.FC = () => (
-    <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-red-400">
+    <svg {...iconProps} viewBox="0 0 24 24" fill="none" stroke="currentColor" className="w-5 h-5 text-red">
         <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
         <path d="M21 5v14a9 3 0 0 1-18 0V5" />
         <path d="M3 5a9 3 0 0 1 18 0" />

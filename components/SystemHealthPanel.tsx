@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import type { SystemStats, PerformanceData, GroupedError } from '../types';
-import { CpuIcon, MemoryIcon, TemperatureIcon, WifiIcon, AlertTriangleIcon, ServerIcon, OsIcon } from './icons';
+import { CpuIcon, MemoryIcon, TemperatureIcon, WifiIcon, AlertTriangleIcon, ServerIcon, OsIcon, LogoIcon } from './icons';
 import Panel from './Panel';
 import ErrorModal from './ErrorModal';
 import { SYSLOG_DATA, APACHE_ERROR_LOG_SAMPLE } from '../data/mockLogs';
@@ -113,15 +113,15 @@ const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({ onAskAI }) => {
   const totalErrorCount = unacknowledgedErrors.reduce((sum, error) => sum + error.count, 0);
 
   const StatItem: React.FC<{ icon: React.ReactNode; label: string; value: string; }> = ({ icon, label, value }) => (
-    <div className="flex items-center space-x-2 text-xs">
+    <div className="flex items-center space-x-2 text-sm font-mono">
       {icon}
-      <span>{label}:</span>
-      <span className="text-green-400">{value}</span>
+      <span className="text-text-secondary">{label}:</span>
+      <span className="text-green font-medium">{value}</span>
     </div>
   );
 
   const ProgressBar: React.FC<{ percent: number }> = ({ percent }) => {
-    const bgColor = percent > 85 ? 'bg-red-500' : percent > 60 ? 'bg-yellow-500' : 'bg-green-500';
+    const bgColor = percent > 85 ? 'bg-red' : percent > 60 ? 'bg-yellow' : 'bg-green';
     return (
       <div className="w-full bg-gray-700 rounded-full h-1.5">
         <div className={`${bgColor} h-1.5 rounded-full`} style={{ width: `${percent}%` }}></div>
@@ -131,66 +131,70 @@ const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({ onAskAI }) => {
 
   return (
     <>
-      <Panel title="System Health Overview" className="!bg-gray-900/50 backdrop-blur-sm">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 p-2">
-          <div className="space-y-1">
-            <h3 className="text-green-400 font-bold mb-1">./status</h3>
+      <div className="bg-panel-bg border border-border rounded-lg shadow-lg p-2">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
+            <div className="md:col-span-1 flex justify-center">
+                <LogoIcon className="h-12 w-12 rounded-full"/>
+            </div>
+          <div className="md:col-span-3">
+            <h2 className="text-lg font-bold text-text-main">Namour System Monitor</h2>
+            <p className="text-sm text-text-muted">Real-time health and performance overview</p>
+          </div>
+          
+          <div className="md:col-span-4 space-y-2 font-mono">
             <StatItem icon={<ServerIcon />} label="Server" value="ubuntu-prod-01" />
             <StatItem icon={<OsIcon />} label="OS" value="Ubuntu 22.04.3 LTS" />
-            <StatItem icon={<TemperatureIcon />} label="CPU Temp" value={`${stats.temp.toFixed(1)}°C`} />
-            <StatItem icon={<WifiIcon />} label="WiFi" value={`${stats.wifi.ssid} (${stats.wifi.signal.toFixed(0)}%)`} />
-            <div className="space-y-1 pt-1">
+             <div className="space-y-1 pt-1">
               <StatItem icon={<MemoryIcon />} label="Memory" value={`${memPercent.toFixed(1)}% (${stats.memory.used.toFixed(1)}G/${stats.memory.total}G)`} />
               <ProgressBar percent={memPercent} />
             </div>
+             <div className="flex items-center space-x-4">
+                <StatItem icon={<TemperatureIcon />} label="CPU" value={`${stats.temp.toFixed(1)}°C`} />
+                <StatItem icon={<WifiIcon />} label="WiFi" value={`${stats.wifi.signal.toFixed(0)}%`} />
+            </div>
           </div>
           
-          <div className="space-y-2">
-            <h3 className="text-yellow-400 font-bold">./log_monitor</h3>
-            <div key={`syslog-${errorKey.syslog}`} className={`flex items-center space-x-2 p-1 -m-1 rounded ${errorKey.syslog > 0 ? 'animate-flash' : ''}`}>
-              <AlertTriangleIcon className={logErrors.syslog > 0 ? "text-red-500" : "text-green-500"} />
-              <span>System Log:</span>
-              <span className={logErrors.syslog > 0 ? "text-red-500" : "text-green-500"}>
-                {logErrors.syslog} errors
+          <div className="md:col-span-2 space-y-2 font-mono">
+            <h3 className="text-yellow font-bold text-sm">./log_monitor</h3>
+            <div key={`syslog-${errorKey.syslog}`} className={`flex items-center space-x-2 p-1 -m-1 rounded text-sm ${errorKey.syslog > 0 ? 'animate-flash' : ''}`}>
+              <AlertTriangleIcon className={logErrors.syslog > 0 ? "text-red" : "text-green"} />
+              <span className="text-text-secondary">Syslog:</span>
+              <span className={logErrors.syslog > 0 ? "text-red" : "text-green"}>
+                {logErrors.syslog}
               </span>
             </div>
-            <div key={`apache-${errorKey.apache}`} className={`flex items-center space-x-2 p-1 -m-1 rounded ${errorKey.apache > 0 ? 'animate-flash' : ''}`}>
-              <AlertTriangleIcon className={logErrors.apache > 0 ? "text-red-500" : "text-green-500"} />
-              <span>Apache2 Error Log:</span>
-              <span className={logErrors.apache > 0 ? "text-red-500" : "text-green-500"}>
-                {logErrors.apache} errors
+            <div key={`apache-${errorKey.apache}`} className={`flex items-center space-x-2 p-1 -m-1 rounded text-sm ${errorKey.apache > 0 ? 'animate-flash' : ''}`}>
+              <AlertTriangleIcon className={logErrors.apache > 0 ? "text-red" : "text-green"} />
+              <span className="text-text-secondary">Apache2:</span>
+              <span className={logErrors.apache > 0 ? "text-red" : "text-green"}>
+                {logErrors.apache}
               </span>
             </div>
             {totalErrorCount > 0 && (
-                <div className="pt-2">
+                <div className="pt-1">
                     <button 
                         onClick={() => setIsModalOpen(true)}
-                        className="w-full bg-yellow-600/50 hover:bg-yellow-500/50 border border-yellow-500 text-yellow-200 font-bold py-1 px-2 rounded transition-colors duration-200 animate-pulse"
+                        className="w-full bg-yellow/20 hover:bg-yellow/30 border border-yellow text-yellow font-bold py-1 px-2 rounded-md transition-colors duration-200 animate-pulse text-xs"
                     >
-                        {totalErrorCount} New Error(s) - Click to View
+                        {totalErrorCount} New Error(s) - View
                     </button>
                 </div>
             )}
-            <div className="text-gray-500 pt-2">
-              <p>Monitoring syslog & apache2/error.log</p>
-              <p>Status: <span className="text-green-400">ACTIVE</span></p>
-            </div>
           </div>
 
-          <div className="h-40 md:h-full">
-            <h3 className="text-purple-400 font-bold mb-2">./performance_data</h3>
+          <div className="h-32 md:h-full md:col-span-2">
               <ResponsiveContainer width="100%" height="100%">
-                <LineChart data={performanceData} margin={{ top: 5, right: 20, left: -20, bottom: 5 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#4A5568" />
+                <LineChart data={performanceData} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" />
                   <XAxis dataKey="name" stroke="#A0AEC0" tick={{fontSize: 10}}/>
                   <YAxis stroke="#A0AEC0" domain={[0, 100]} tick={{fontSize: 10}} label={{ value: 'CPU %', angle: -90, position: 'insideLeft', fill: '#A0AEC0', fontSize: 12 }} />
-                  <Tooltip contentStyle={{ backgroundColor: '#1A202C', border: '1px solid #4A5568' }} labelStyle={{ color: '#E2E8F0' }} />
-                  <Line type="monotone" dataKey="cpu" stroke="#38B2AC" strokeWidth={2} dot={false} />
+                  <Tooltip contentStyle={{ backgroundColor: '#111827', border: '1px solid #374151' }} labelStyle={{ color: '#d1d5db' }} />
+                  <Line type="monotone" dataKey="cpu" stroke="#38bdf8" strokeWidth={2} dot={false} />
                 </LineChart>
               </ResponsiveContainer>
           </div>
         </div>
-      </Panel>
+      </div>
       <ErrorModal 
         isOpen={isModalOpen}
         errors={unacknowledgedErrors}

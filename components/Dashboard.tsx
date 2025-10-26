@@ -24,7 +24,7 @@ const Dashboard: React.FC = () => {
   const handleQuerySent = useCallback(() => setAiAutoSendQuery(''), []);
 
   return (
-    <div className="h-full flex flex-col p-2 md:p-4">
+    <div className="h-full flex flex-col p-2 md:p-4 font-mono">
       <header className="flex-shrink-0 mb-2 md:mb-4">
         <SystemHealthPanel onAskAI={handlePrefillAI} />
       </header>
