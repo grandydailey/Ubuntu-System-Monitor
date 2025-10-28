@@ -95,3 +95,14 @@ export const FAIL2BAN_LOG_SAMPLE = [
     "2024-07-19 12:01:08,888 fail2ban.actions[1234]: NOTICE  [sshd] Ban 198.51.100.22",
     "2024-07-19 12:10:00,123 fail2ban.server  [1234]: ERROR   Could not find jail 'apache-badbots'",
 ];
+
+export const MYSQL_LOG_SAMPLE = [
+    "2024-07-20T10:00:01.123456Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.28) starting as process 1",
+    "2024-07-20T10:00:02.234567Z 1 [Note] [MY-010047] [Server] mysqld: ready for connections. Version: '8.0.28'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.",
+    "2024-07-20T10:05:10.654321Z 5 [Warning] [MY-010055] [Server] Aborted connection 5 to db: 'webapp' user: 'webuser' host: 'localhost' (Got an error reading communication packets)",
+    "2024-07-20T10:12:30.789012Z 6 [Note] [MY-010211] [InnoDB] A new raw disk partition was found on /dev/sdb. A new file './ib_new_raw_dev' will be created to denote this partition.",
+    "2024-07-20T10:15:22.987654Z 7 [ERROR] [MY-010096] [Server] Can't create/write to file '/var/lib/mysql/webapp/users.MYI' (Errcode: 28 - No space left on device)",
+    "2024-07-20T10:18:00.111222Z 8 [Note] [MY-010212] [InnoDB] Starting shutdown...",
+    "2024-07-20T10:18:02.333444Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.0.28).",
+    "2024-07-20T10:25:45.555666Z 12 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.",
+];
