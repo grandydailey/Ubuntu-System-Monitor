@@ -181,7 +181,7 @@ const HardwareAndServicesPanel: React.FC<HardwarePanelProps> = ({ onAskAI }) => 
   };
   
   return (
-    <Panel title="./status --hardware --services" className="flex flex-col">
+    <Panel title="./status --hardware --services" className="flex flex-col !bg-violet-50 dark:!bg-violet-950/50">
       <div className="flex-grow p-2 space-y-3 overflow-y-auto font-mono">
         {/* Disk Health Section */}
         <div>

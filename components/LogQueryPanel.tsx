@@ -126,7 +126,7 @@ const LogQueryPanel: React.FC = () => {
   };
   
   return (
-    <Panel title="grep [query] /var/log/syslog" className="flex flex-col">
+    <Panel title="grep [query] /var/log/syslog" className="flex flex-col !bg-emerald-50 dark:!bg-emerald-950/50">
       <div className="p-2 border-b border-border space-y-2">
         <div className="flex items-center space-x-2">
           <input

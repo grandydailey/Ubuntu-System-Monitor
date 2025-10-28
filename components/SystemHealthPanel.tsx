@@ -131,7 +131,7 @@ const SystemHealthPanel: React.FC<SystemHealthPanelProps> = ({ onAskAI }) => {
 
   return (
     <>
-      <div className="bg-panel-bg border border-border rounded-lg shadow-lg p-2">
+      <div className="bg-white dark:bg-gray-800/50 border border-border rounded-lg shadow-xl p-2">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
             <div className="md:col-span-1 flex justify-center">
                 <LogoIcon className="h-12 w-12 rounded-full"/>

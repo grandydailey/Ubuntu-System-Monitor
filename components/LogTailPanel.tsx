@@ -210,7 +210,7 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
   };
 
   return (
-    <Panel title={panelTitle} className="flex flex-col">
+    <Panel title={panelTitle} className="flex flex-col !bg-sky-50 dark:!bg-sky-950/50">
       {activeLog === null ? (
         <div className="flex flex-col items-center justify-center h-full p-4 overflow-y-auto">
             <h3 className="text-lg font-bold text-text-main mb-4 font-sans">Select a log file to tail</h3>
