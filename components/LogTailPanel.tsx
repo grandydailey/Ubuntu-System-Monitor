@@ -1,9 +1,10 @@
+
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import Panel from './Panel';
-import { AUTH_LOG_SAMPLE, APACHE_LOG_SAMPLE, FAIL2BAN_LOG_SAMPLE, MYSQL_LOG_SAMPLE } from '../data/mockLogs';
+import { AUTH_LOG_SAMPLE, APACHE_LOG_SAMPLE, FAIL2BAN_LOG_SAMPLE, MYSQL_LOG_SAMPLE, APACHE_ERROR_LOG_SAMPLE, NAMOUR_ACCESS_LOG_SAMPLE, RANDY_UPLOAD_ACCESS_LOG_SAMPLE, NAMOUR_ERROR_LOG_SAMPLE, RANDY_UPLOAD_ERROR_LOG_SAMPLE } from '../data/mockLogs';
 import { SpeakerOnIcon, SpeakerOffIcon, PauseIcon, PlayIcon, SparklesIcon, FileIcon } from './icons';
 
-type LogSource = 'auth' | 'apache' | 'fail2ban' | 'mysql';
+type LogSource = 'auth' | 'apache' | 'fail2ban' | 'mysql' | 'apache_error' | 'namour_access' | 'randy_upload_access' | 'namour_error' | 'randy_upload_error';
 type LogSeverity = 'all' | 'info' | 'warning' | 'error' | 'critical';
 type LogLine = {
   text: string;
@@ -16,9 +17,14 @@ interface LogTailPanelProps {
 
 const logSources: { id: LogSource; label: string; path: string }[] = [
     { id: 'auth', label: 'auth.log', path: '/var/log/' },
-    { id: 'apache', label: 'access.log', path: '/var/log/apache2/' },
     { id: 'fail2ban', label: 'fail2ban.log', path: '/var/log/' },
     { id: 'mysql', label: 'mysql.log', path: '/var/log/' },
+    { id: 'apache', label: 'access.log', path: '/var/log/apache2/' },
+    { id: 'apache_error', label: 'error.log', path: '/var/log/apache2/' },
+    { id: 'namour_access', label: 'namour_access.log', path: '/var/log/apache2/' },
+    { id: 'namour_error', label: 'namour_error.log', path: '/var/log/apache2/' },
+    { id: 'randy_upload_access', label: 'randy-upload_access.log', path: '/var/log/apache2/' },
+    { id: 'randy_upload_error', label: 'randy-upload_error.log', path: '/var/log/apache2/' },
 ];
 
 const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
@@ -91,6 +97,11 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
         case 'apache': source = APACHE_LOG_SAMPLE; break;
         case 'fail2ban': source = FAIL2BAN_LOG_SAMPLE; break;
         case 'mysql': source = MYSQL_LOG_SAMPLE; break;
+        case 'apache_error': source = APACHE_ERROR_LOG_SAMPLE; break;
+        case 'namour_access': source = NAMOUR_ACCESS_LOG_SAMPLE; break;
+        case 'randy_upload_access': source = RANDY_UPLOAD_ACCESS_LOG_SAMPLE; break;
+        case 'namour_error': source = NAMOUR_ERROR_LOG_SAMPLE; break;
+        case 'randy_upload_error': source = RANDY_UPLOAD_ERROR_LOG_SAMPLE; break;
         default: source = [];
       }
       const newLineText = source[Math.floor(Math.random() * source.length)];
@@ -107,7 +118,7 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
             lineType = 'error';
             playAlertSound();
         }
-      } else if (activeLog === 'apache') {
+      } else if (activeLog === 'apache' || activeLog === 'namour_access' || activeLog === 'randy_upload_access') {
           if (/"\s5\d{2}\s/.test(newLineText)) { // Server errors (5xx)
               lineType = 'error';
               playAlertSound();
@@ -131,7 +142,15 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
         } else if (lowerLine.includes('[warning]')) {
             lineType = 'warning';
         }
+      } else if (activeLog === 'apache_error' || activeLog === 'namour_error' || activeLog === 'randy_upload_error') {
+        if (lowerLine.includes('error')) {
+            lineType = 'error';
+            playAlertSound();
+        } else if (lowerLine.includes('warn') || lowerLine.includes('notice')) {
+            lineType = 'warning';
+        }
       }
+
 
       const newLine: LogLine = { text: newLineText, type: lineType };
 
@@ -167,6 +186,12 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
       return true;
     });
   }, [logLines, filter]);
+
+  const activeLogInfo = useMemo(() => {
+    return logSources.find(s => s.id === activeLog);
+  }, [activeLog]);
+
+  const panelTitle = activeLogInfo ? `tail -f ${activeLogInfo.path}${activeLogInfo.label}` : 'tail -f [log_file]';
   
   const SeverityButton: React.FC<{ level: LogSeverity, color: string, children: React.ReactNode }> = ({ level, color, children }) => {
     const isActive = filter === level;
@@ -185,41 +210,44 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
   };
 
   return (
-    <Panel title="tail -f [log_file]" className="flex flex-col">
-      <div className="flex flex-grow overflow-hidden">
-        {/* Log selection sidebar */}
-        <div className="w-48 flex-shrink-0 border-r border-border p-2 space-y-1 overflow-y-auto">
-            <p className="text-xs font-bold text-text-muted px-2 pb-1">LOG FILES</p>
-            {logSources.map(source => (
-                <button
-                    key={source.id}
-                    onClick={() => handleSelectLog(source.id)}
-                    className={`w-full text-left px-2 py-1.5 rounded-md flex items-center space-x-2 text-sm transition-colors duration-150 ${
-                        activeLog === source.id
-                        ? 'bg-primary/20 text-primary font-bold'
-                        : 'text-text-secondary hover:bg-border hover:text-text-main'
-                    }`}
-                >
-                    <FileIcon className="w-4 h-4 flex-shrink-0"/>
-                    <div className="truncate">
-                        <span className="block truncate">{source.label}</span>
-                        <span className="text-xs text-text-muted block truncate">{source.path}</span>
-                    </div>
-                </button>
-            ))}
+    <Panel title={panelTitle} className="flex flex-col">
+      {activeLog === null ? (
+        <div className="flex flex-col items-center justify-center h-full p-4 overflow-y-auto">
+            <h3 className="text-lg font-bold text-text-main mb-4 font-sans">Select a log file to tail</h3>
+            <div className="w-full max-w-sm space-y-2">
+                {logSources.map(source => (
+                    <button
+                        key={source.id}
+                        onClick={() => handleSelectLog(source.id)}
+                        className="w-full text-left p-3 rounded-md flex items-center space-x-3 text-sm transition-colors duration-150 bg-panel-header hover:bg-border hover:text-text-main"
+                    >
+                        <FileIcon className="w-5 h-5 flex-shrink-0 text-primary"/>
+                        <div className="truncate">
+                            <span className="font-bold text-text-main block truncate">{source.label}</span>
+                            <span className="text-xs text-text-muted block truncate">{source.path}</span>
+                        </div>
+                    </button>
+                ))}
+            </div>
         </div>
-
-        {/* Main log content area */}
+      ) : (
         <div className="flex flex-col flex-grow overflow-hidden">
             <div className="p-2 border-b border-border flex justify-between items-center flex-wrap gap-2">
-                 {activeLog ? (
-                    <div className="flex items-center space-x-1 p-0.5 bg-panel-header rounded-lg">
+                 <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                        onClick={() => setActiveLog(null)}
+                        className="text-xs bg-panel-header hover:bg-border text-text-secondary px-2 py-1 rounded-md transition-colors"
+                    >
+                        Change Log
+                    </button>
+                    <div className="h-4 border-l border-border mx-1"></div>
+                    <div className="flex items-center space-x-1 p-0.5 bg-background rounded-lg">
                         <SeverityButton level="all" color="bg-primary/80">All</SeverityButton>
                         <SeverityButton level="error" color="bg-red">Error</SeverityButton>
                         <SeverityButton level="warning" color="bg-yellow">Warning</SeverityButton>
                         <SeverityButton level="info" color="bg-green">Info</SeverityButton>
                     </div>
-                ) : <div />}
+                </div>
                 <div className="flex items-center space-x-2">
                     <button
                         onClick={() => setIsPaused(!isPaused)}
@@ -268,7 +296,7 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
                 : <span className="text-text-muted px-2 font-sans">{activeLog ? (isPaused ? `Tailing paused. Press play to resume...` : 'Waiting for log entries...') : 'Select a log file to begin tailing.'}</span>}
             </div>
         </div>
-      </div>
+      )}
     </Panel>
   );
 };

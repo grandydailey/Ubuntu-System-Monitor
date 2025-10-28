@@ -1,5 +1,4 @@
 
-
 export const SYSLOG_DATA = [
   "Jul 18 10:00:01 ubuntu-server CRON[11234]: (root) CMD (   cd / && run-parts --report /etc/cron.hourly)",
   "Jul 18 10:01:15 ubuntu-server systemd[1]: Starting Clean up session files...",
@@ -105,4 +104,32 @@ export const MYSQL_LOG_SAMPLE = [
     "2024-07-20T10:18:00.111222Z 8 [Note] [MY-010212] [InnoDB] Starting shutdown...",
     "2024-07-20T10:18:02.333444Z 0 [System] [MY-010910] [Server] /usr/sbin/mysqld: Shutdown complete (mysqld 8.0.28).",
     "2024-07-20T10:25:45.555666Z 12 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.",
+];
+
+export const NAMOUR_ACCESS_LOG_SAMPLE = [
+  '10.1.1.5 - namour [19/Jul/2024:14:01:10 +0000] "POST /api/v1/user/create HTTP/1.1" 201 150 "-" "Go-http-client/1.1"',
+  '10.1.1.6 - - [19/Jul/2024:14:01:12 +0000] "GET /api/v1/status HTTP/1.1" 200 25 "-" "HealthChecker/1.0"',
+  '10.1.1.5 - namour [19/Jul/2024:14:02:30 +0000] "GET /api/v1/user/123/profile HTTP/1.1" 200 1250 "-" "Go-http-client/1.1"',
+  '10.1.1.7 - - [19/Jul/2024:14:03:00 +0000] "PUT /api/v1/user/123/profile HTTP/1.1" 401 50 "-" "Python-requests/2.28.1"',
+  '10.1.1.5 - namour [19/Jul/2024:14:04:05 +0000] "DELETE /api/v1/user/456 HTTP/1.1" 500 100 "-" "Go-http-client/1.1"',
+];
+
+export const RANDY_UPLOAD_ACCESS_LOG_SAMPLE = [
+  '172.16.0.10 - randy [19/Jul/2024:15:20:01 +0000] "POST /upload/image.jpg HTTP/1.1" 200 350123 "-" "MobileApp/2.1 (iOS)"',
+  '172.16.0.11 - - [19/Jul/2024:15:20:05 +0000] "POST /upload/document.pdf HTTP/1.1" 413 0 "-" "MobileApp/3.0 (Android)"',
+  '172.16.0.10 - randy [19/Jul/2024:15:21:15 +0000] "GET /download/image.jpg HTTP/1.1" 200 350123 "-" "MobileApp/2.1 (iOS)"',
+  '172.16.0.12 - - [19/Jul/2024:15:22:40 +0000] "POST /upload/video.mp4 HTTP/1.1" 200 25012345 "-" "DesktopUploader/1.5"',
+  '172.16.0.11 - - [19/Jul/2024:15:23:00 +0000] "POST /upload/archive.zip HTTP/1.1" 503 120 "-" "MobileApp/3.0 (Android)"',
+];
+
+export const NAMOUR_ERROR_LOG_SAMPLE = [
+  "[Fri Jul 19 14:02:35.123456 2024] [php-fpm:warn] [pid 2345:tid 140123] [client 10.1.1.5:12345] AH01211: Timeout waiting for output from CGI script /var/www/namour/api/index.php",
+  "[Fri Jul 19 14:03:00.987654 2024] [auth_jwt:error] [pid 2346:tid 140124] [client 10.1.1.7:54321] AH10001: JWT verification failed: token has expired",
+  "[Fri Jul 19 14:04:05.111222 2024] [proxy_fcgi:error] [pid 2347:tid 140125] [client 10.1.1.5:12346] AH01071: Got error 'PHP message: PHP Fatal error:  Uncaught PDOException: SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry 'test@example.com' for key 'users.email_unique' in /var/www/namour/api/models/User.php:50'",
+];
+
+export const RANDY_UPLOAD_ERROR_LOG_SAMPLE = [
+  "[Fri Jul 19 15:20:05.123456 2024] [core:error] [pid 3345:tid 140223] [client 172.16.0.11:12345] AH00126: an unknown filter was not added: DEFLATE",
+  "[Fri Jul 19 15:22:41.987654 2024] [lua:error] [pid 3346:tid 140224] [client 172.16.0.12:54321] AH02229: stat of /var/www/randy-upload/scripts/process_video.lua failed: No such file or directory",
+  "[Fri Jul 19 15:23:00.111222 2024] [proxy:error] [pid 3347:tid 140225] (111)Connection refused: AH00957: FCGI: attempt to connect to 127.0.0.1:9001 (php-fpm) failed",
 ];
