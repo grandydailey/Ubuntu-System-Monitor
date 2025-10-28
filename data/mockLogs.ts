@@ -79,3 +79,17 @@ export const APACHE_ERROR_LOG_SAMPLE = [
   "[Thu Jul 18 10:15:22.987654 2024] [php7.4:error] [pid 1250:tid 1401234567999] [client 127.0.0.1:12345] script '/var/www/html/missing.php' not found or unable to stat",
   "[Thu Jul 18 10:20:05.111222 2024] [authz_core:error] [pid 1251:tid 1401234567111] [client 192.168.1.103:54321] AH01630: client denied by server configuration: /var/www/html/admin/.htaccess",
 ];
+
+export const FAIL2BAN_LOG_SAMPLE = [
+    "2024-07-19 11:30:00,123 fail2ban.server  [1234]: INFO    Starting Fail2ban v0.11.2",
+    "2024-07-19 11:30:01,456 fail2ban.database[1234]: INFO    Connected to fail2ban persistent database '/var/lib/fail2ban/fail2ban.sqlite3'",
+    "2024-07-19 11:30:02,789 fail2ban.jail   [1234]: INFO    Creating new jail 'sshd'",
+    "2024-07-19 11:30:03,111 fail2ban.jail   [1234]: INFO    Jail 'sshd' started",
+    "2024-07-19 11:35:15,222 fail2ban.filter [1234]: INFO    [sshd] Found 203.0.113.10",
+    "2024-07-19 11:35:16,333 fail2ban.filter [1234]: INFO    [sshd] Found 203.0.113.10",
+    "2024-07-19 11:35:18,444 fail2ban.filter [1234]: INFO    [sshd] Found 203.0.113.10",
+    "2024-07-19 11:35:19,555 fail2ban.actions[1234]: NOTICE  [sshd] Ban 203.0.113.10",
+    "2024-07-19 11:45:19,666 fail2ban.actions[1234]: NOTICE  [sshd] Unban 203.0.113.10",
+    "2024-07-19 12:01:05,777 fail2ban.filter [1234]: INFO    [sshd] Found 198.51.100.22",
+    "2024-07-19 12:01:08,888 fail2ban.actions[1234]: NOTICE  [sshd] Ban 198.51.100.22",
+];

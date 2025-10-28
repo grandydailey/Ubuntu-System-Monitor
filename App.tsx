@@ -14,6 +14,10 @@ const App: React.FC = () => {
     setAppState('dashboard');
   };
 
+  const handleLogout = () => {
+    setAppState('login');
+  };
+
   const renderContent = () => {
     switch (appState) {
       case 'login':
@@ -21,7 +25,7 @@ const App: React.FC = () => {
       case 'overview':
         return <SystemOverview onContinue={handleOverviewContinue} />;
       case 'dashboard':
-        return <Dashboard />;
+        return <Dashboard onLogout={handleLogout} />;
       default:
         return <LoginPage onLoginSuccess={handleLoginSuccess} />;
     }

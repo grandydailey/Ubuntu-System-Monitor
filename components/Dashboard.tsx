@@ -5,9 +5,13 @@ import TerminalPanel from './TerminalPanel';
 import ChatbotPanel from './ChatbotPanel';
 import HardwareAndServicesPanel from './DiskPanel';
 import LogQueryPanel from './LogQueryPanel';
-import { TerminalIcon, ChatIcon } from './icons';
+import { TerminalIcon, ChatIcon, LogoutIcon } from './icons';
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+    onLogout?: () => void;
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const [showTerminal, setShowTerminal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
   const [aiPrefillQuery, setAiPrefillQuery] = useState('');
@@ -36,7 +40,7 @@ const Dashboard: React.FC = () => {
     </div>
   );
   
-  const ActionButton: React.FC<{ onClick: () => void; children: React.ReactNode }> = ({ onClick, children }) => (
+  const ActionButton: React.FC<{ onClick?: () => void; children: React.ReactNode }> = ({ onClick, children }) => (
     <button 
       onClick={onClick} 
       className="bg-panel-bg border border-border hover:bg-border text-text-secondary px-3 py-2 rounded-md flex items-center justify-center sm:justify-start space-x-2 transition-colors w-full sm:w-auto"
@@ -58,6 +62,11 @@ const Dashboard: React.FC = () => {
             <ActionButton onClick={() => setShowChatbot(p => !p)}>
                 <ChatIcon /> <span className="">AI Assistant</span>
             </ActionButton>
+            {onLogout && (
+                <ActionButton onClick={onLogout}>
+                    <LogoutIcon /> <span>Logout</span>
+                </ActionButton>
+            )}
         </div>
       </header>
       <main className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-2 md:gap-4 overflow-hidden">

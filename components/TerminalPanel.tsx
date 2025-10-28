@@ -41,10 +41,17 @@ type File = { type: 'file'; content: string };
 type Directory = { type: 'dir'; content: { [key: string]: File | Directory } };
 type FSNode = File | Directory;
 
+// Icon SVGs as strings for direct injection into HTML. Using hardcoded colors from the theme.
+const FolderIconSVG = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: -2px; margin-right: 4px;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>`;
+const FileIconSVG = `<svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="#d1d5db" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="display: inline-block; vertical-align: -2px; margin-right: 4px;"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg>`;
+
+
 const TerminalPanel: React.FC = () => {
     const [history, setHistory] = useState<string[]>(['Welcome to Namour System Monitor! Type `help` to see available commands.']);
     const [input, setInput] = useState('');
     const [cwd, setCwd] = useState('/home/namour');
+    const [commandHistory, setCommandHistory] = useState<string[]>([]);
+    const historyIndexRef = useRef<number>(0);
     const inputRef = useRef<HTMLInputElement>(null);
     const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -111,7 +118,12 @@ const TerminalPanel: React.FC = () => {
                     const showAll = args.includes('-a');
                     const entries = Object.keys(node.content)
                         .filter(name => showAll || !name.startsWith('.'))
-                        .map(name => node.content[name].type === 'dir' ? `<span class="text-primary">${name}/</span>` : name);
+                        .map(name => {
+                            if (node.content[name].type === 'dir') {
+                                return `${FolderIconSVG}<span class="text-primary">${name}/</span>`;
+                            }
+                            return `${FileIconSVG}${name}`;
+                        });
                     output = [entries.join('  ')];
                 } else {
                     output = [`ls: cannot access '${args[0] || '.'}': No such file or directory`];
@@ -207,9 +219,42 @@ const TerminalPanel: React.FC = () => {
     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter') {
             e.preventDefault();
+            const command = input.trim();
+            
             processCommand(input);
+
+            if (command) {
+                if (commandHistory[commandHistory.length - 1] !== command) {
+                    const newCommandHistory = [...commandHistory, command];
+                    setCommandHistory(newCommandHistory);
+                    historyIndexRef.current = newCommandHistory.length;
+                } else {
+                     historyIndexRef.current = commandHistory.length;
+                }
+            }
             setInput('');
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            if (commandHistory.length === 0) return;
+            
+            const newIndex = Math.max(0, historyIndexRef.current - 1);
+            historyIndexRef.current = newIndex;
+            setInput(commandHistory[newIndex] || '');
+        } else if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            if (commandHistory.length === 0) return;
+
+            const newIndex = Math.min(commandHistory.length, historyIndexRef.current + 1);
+            historyIndexRef.current = newIndex;
+            setInput(commandHistory[newIndex] || '');
         }
+    };
+
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setInput(e.target.value);
+        // If user types, they are no longer navigating history.
+        // Reset index to "end" so the next ArrowUp starts from the last command.
+        historyIndexRef.current = commandHistory.length;
     };
 
     const prompt = `namour@ubuntu-prod-01:${cwd.replace('/home/namour', '~')}$`;
@@ -235,7 +280,7 @@ const TerminalPanel: React.FC = () => {
                     ref={inputRef}
                     type="text"
                     value={input}
-                    onChange={(e) => setInput(e.target.value)}
+                    onChange={handleInputChange}
                     onKeyDown={handleKeyDown}
                     className="absolute opacity-0 w-0 h-0"
                     autoFocus

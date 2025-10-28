@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Panel from './Panel';
-import { AUTH_LOG_SAMPLE, APACHE_LOG_SAMPLE } from '../data/mockLogs';
+import { AUTH_LOG_SAMPLE, APACHE_LOG_SAMPLE, FAIL2BAN_LOG_SAMPLE } from '../data/mockLogs';
 import { SpeakerOnIcon, SpeakerOffIcon, PauseIcon, PlayIcon, SparklesIcon } from './icons';
 
-type LogSource = 'auth' | 'apache';
+type LogSource = 'auth' | 'apache' | 'fail2ban';
 type LogLine = {
   text: string;
   type: 'normal' | 'error' | 'critical';
@@ -75,16 +75,23 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
     if (!activeLog || isPaused) return;
 
     const interval = window.setInterval(() => {
-      const source = activeLog === 'auth' ? AUTH_LOG_SAMPLE : APACHE_LOG_SAMPLE;
+      let source;
+      switch(activeLog) {
+        case 'auth': source = AUTH_LOG_SAMPLE; break;
+        case 'apache': source = APACHE_LOG_SAMPLE; break;
+        case 'fail2ban': source = FAIL2BAN_LOG_SAMPLE; break;
+        default: source = [];
+      }
       const newLineText = source[Math.floor(Math.random() * source.length)];
       
       const lowerLine = newLineText.toLowerCase();
       const isSshdFailure = activeLog === 'auth' && lowerLine.includes('sshd') && lowerLine.includes('failed password');
       const isApacheError = activeLog === 'apache' && /"\s[45]\d{2}\s/.test(newLineText);
       const isGeneralAuthError = activeLog === 'auth' && lowerLine.includes('failed') && !isSshdFailure;
+      const isFail2BanCritical = activeLog === 'fail2ban' && (lowerLine.includes('ban') || lowerLine.includes('jail'));
 
       let lineType: LogLine['type'] = 'normal';
-      if (isSshdFailure) {
+      if (isSshdFailure || isFail2BanCritical) {
         playIntrusionAlertSound();
         lineType = 'critical';
       } else if (isGeneralAuthError || isApacheError) {
@@ -126,13 +133,16 @@ const LogTailPanel: React.FC<LogTailPanelProps> = ({ onAskAI }) => {
 
   return (
     <Panel title="tail -f [log_file]" className="flex flex-col">
-      <div className="p-2 border-b border-border flex justify-between items-center">
+      <div className="p-2 border-b border-border flex justify-between items-center flex-wrap gap-2">
         <div className="flex space-x-2">
             <button onClick={() => handleSelectLog('auth')} className={getButtonClass('auth')}>
             auth.log
             </button>
             <button onClick={() => handleSelectLog('apache')} className={getButtonClass('apache')}>
             apache2/access.log
+            </button>
+             <button onClick={() => handleSelectLog('fail2ban')} className={getButtonClass('fail2ban')}>
+            fail2ban.log
             </button>
         </div>
         <div className="flex items-center space-x-2">
