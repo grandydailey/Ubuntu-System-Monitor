@@ -1,4 +1,5 @@
 
+
 export const SYSLOG_DATA = [
   "Jul 18 10:00:01 ubuntu-server CRON[11234]: (root) CMD (   cd / && run-parts --report /etc/cron.hourly)",
   "Jul 18 10:01:15 ubuntu-server systemd[1]: Starting Clean up session files...",
@@ -92,4 +93,5 @@ export const FAIL2BAN_LOG_SAMPLE = [
     "2024-07-19 11:45:19,666 fail2ban.actions[1234]: NOTICE  [sshd] Unban 203.0.113.10",
     "2024-07-19 12:01:05,777 fail2ban.filter [1234]: INFO    [sshd] Found 198.51.100.22",
     "2024-07-19 12:01:08,888 fail2ban.actions[1234]: NOTICE  [sshd] Ban 198.51.100.22",
+    "2024-07-19 12:10:00,123 fail2ban.server  [1234]: ERROR   Could not find jail 'apache-badbots'",
 ];

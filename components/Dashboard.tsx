@@ -6,16 +6,22 @@ import ChatbotPanel from './ChatbotPanel';
 import HardwareAndServicesPanel from './DiskPanel';
 import LogQueryPanel from './LogQueryPanel';
 import { TerminalIcon, ChatIcon, LogoutIcon } from './icons';
+import ThemeToggleButton from './ThemeToggleButton';
+import type { Theme } from '../App';
+import type { Message } from '../types';
 
 interface DashboardProps {
     onLogout?: () => void;
+    theme: Theme;
+    setTheme: (theme: Theme) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+const Dashboard: React.FC<DashboardProps> = ({ onLogout, theme, setTheme }) => {
   const [showTerminal, setShowTerminal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
   const [aiPrefillQuery, setAiPrefillQuery] = useState('');
   const [aiAutoSendQuery, setAiAutoSendQuery] = useState('');
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
 
   const formatQuery = (query: string) => `I've encountered the following system error on my Ubuntu server. Can you explain what it means, what the likely cause is, and suggest some commands to diagnose and fix it?\n\nError details:\n\`\`\`\n${query}\n\`\`\``;
 
@@ -55,7 +61,9 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         <div className="flex-grow">
           <SystemHealthPanel onAskAI={handlePrefillAI} />
         </div>
-        <div className="flex sm:flex-col gap-2 md:gap-4">
+        <div className="flex flex-col gap-2 md:gap-4">
+          <ThemeToggleButton theme={theme} setTheme={setTheme} />
+          <div className="flex sm:flex-col gap-2 md:gap-4">
             <ActionButton onClick={() => setShowTerminal(p => !p)}>
                 <TerminalIcon /> <span className="">Terminal</span>
             </ActionButton>
@@ -67,6 +75,7 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     <LogoutIcon /> <span>Logout</span>
                 </ActionButton>
             )}
+          </div>
         </div>
       </header>
       <main className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-2 md:gap-4 overflow-hidden">
@@ -90,6 +99,8 @@ const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       {showChatbot && (
         <Modal onClose={() => setShowChatbot(false)} maxWidthClass="max-w-2xl">
           <ChatbotPanel 
+            messages={chatMessages}
+            setMessages={setChatMessages}
             initialQuery={aiPrefillQuery} 
             onQueryHandled={handleQueryHandled}
             autoSendQuery={aiAutoSendQuery}

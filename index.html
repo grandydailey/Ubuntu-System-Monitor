@@ -9,41 +9,50 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
-              mono: ['"IBM Plex Mono"', 'monospace'],
-            },
-            colors: {
-              background: '#111827', // gray-900
-              'panel-bg': '#1f2937',   // gray-800
-              'panel-header': '#374151', // gray-700
-              border: '#374151',      // gray-700
-              'text-main': '#d1d5db',    // gray-300
-              'text-secondary': '#9ca3af', // gray-400
-              'text-muted': '#6b7280',    // gray-500
-              primary: '#38bdf8',      // sky-400
-              'primary-focus': '#7dd3fc', // sky-300
-              green: '#4ade80',       // green-400
-              yellow: '#facc15',      // yellow-400
-              red: '#f87171',         // red-400
-            }
-          },
-        },
-      }
-    </script>
     <style>
+      :root {
+        --color-background: #ffffff; /* white */
+        --color-panel-bg: #f9fafb; /* gray-50 */
+        --color-panel-header: #f3f4f6; /* gray-100 */
+        --color-border: #e5e7eb; /* gray-200 */
+        --color-text-main: #111827; /* gray-900 */
+        --color-text-secondary: #374151; /* gray-700 */
+        --color-text-muted: #6b7280; /* gray-500 */
+        --color-primary: #0ea5e9; /* sky-500 */
+        --color-primary-focus: #38bdf8; /* sky-400 */
+        --color-green: #22c55e; /* green-500 */
+        --color-yellow: #f59e0b; /* amber-500 */
+        --color-red: #ef4444; /* red-500 */
+        --color-text-inverted: #ffffff; /* white */
+      }
+      
+      html.dark {
+        --color-background: #111827;
+        --color-panel-bg: #1f2937;
+        --color-panel-header: #374151;
+        --color-border: #374151;
+        --color-text-main: #f9fafb;
+        --color-text-secondary: #9ca3af;
+        --color-text-muted: #6b7280;
+        --color-primary: #38bdf8;
+        --color-primary-focus: #7dd3fc;
+        --color-green: #4ade80;
+        --color-yellow: #facc15;
+        --color-red: #f87171;
+        --color-text-inverted: #111827;
+      }
+
       html, body, #root {
         height: 100%;
         margin: 0;
         padding: 0;
         overflow: hidden; /* Prevent scrolling on the body */
+        color-scheme: light dark;
       }
       body {
         overscroll-behavior: none;
+        background-color: var(--color-background);
+        transition: background-color 0.3s ease;
       }
       @keyframes flash-red-bg {
         0%, 100% {
@@ -58,13 +67,41 @@
       }
       @keyframes blink-cursor {
         from, to { border-color: transparent }
-        50% { border-color: #38bdf8; /* primary color */ }
+        50% { border-color: var(--color-primary); }
       }
       .cursor-blink {
-        border-right: 0.2em solid #38bdf8;
+        border-right: 0.2em solid var(--color-primary);
         animation: blink-cursor 1s step-end infinite;
       }
     </style>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+              mono: ['"IBM Plex Mono"', 'monospace'],
+            },
+            colors: {
+              background: 'var(--color-background)',
+              'panel-bg': 'var(--color-panel-bg)',
+              'panel-header': 'var(--color-panel-header)',
+              border: 'var(--color-border)',
+              'text-main': 'var(--color-text-main)',
+              'text-secondary': 'var(--color-text-secondary)',
+              'text-muted': 'var(--color-text-muted)',
+              primary: 'var(--color-primary)',
+              'primary-focus': 'var(--color-primary-focus)',
+              green: 'var(--color-green)',
+              yellow: 'var(--color-yellow)',
+              red: 'var(--color-red)',
+              'text-inverted': 'var(--color-text-inverted)',
+            }
+          },
+        },
+      }
+    </script>
   <script type="importmap">
 {
   "imports": {
@@ -77,7 +114,7 @@
 }
 </script>
 </head>
-  <body class="bg-background">
+  <body>
     <div id="root"></div>
     <script type="module" src="/index.tsx"></script>
   </body>

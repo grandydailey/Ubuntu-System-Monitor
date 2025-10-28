@@ -6,7 +6,7 @@ const iconProps = {
 };
 
 export const LogoIcon: React.FC<{className?: string}> = ({className}) => (
-    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAA+AD4DASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAAUDBAYH/8QAIxAAAQQCAgICAwAAAAAAAAAAAQIDBAUAEQYSITFBEyJRYf/EABgBAAIDAAAAAAAAAAAAAAAAAAEEAgMF/8QAHREAAgICAwEBAAAAAAAAAAAAAAECEQMhEjFBYf/aAAwDAQACEQMRAD8A7aWzNhyXERpMhl9ojYWhYKkn2CNGoE25bixWYsWQ++4rsIQgrUfZAGg+Jc8oXpke3mSo8l5hO6G0r2hSvog/zR9Q+P2XpTNzdyW8l5xtO0N9dgUfoA6H6A0C22wYhW2S0tpQ+UqGx+tE6ACJSlKECpSlAKlKUApSlAKlKUApSlAKlKUApSlAKUpQClKUAqPGlx5aCtxlDrZOttaQrY+xRolAZn45JbmQYz7St7bcQFAn6II0aVFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKA//Z" alt="Namour System Monitor Logo" className={className} />
+    <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAA+AD4DASIAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAAUDBAYH/8QAIxAAAQQCAgICAwAAAAAAAAAAAQIDBAUAEQYSITFBEyJRYf/EABgBAAIDAAAAAAAAAAAAAAAAAAEEAgMF/8QAHREAAgICAwEBAAAAAAAAAAAAAAECEQMhEjFBYf/aAAwDAQACEQMRAD8A7aWzNhyXERpMhl9ojYWhYKkn2CNGoE25bixWYsWQ++4rsIQgrUfZAGg+Jc8oXpke3mSo8l5hO6G0r2hSvog/zR9Q+P2XpTNzdyW8l5xtO0N9dgUfoA6H6A0C22wYhW2S0tpQ+UqGx+tE6ACJSlKECpSlAKlKUApSlAKlKUApSlAKlKUApSlAKlKUApSlAKlKUApSlAqPGlx5aCtxlDrZOttaQrY+xRolAZn45JbmQYz7St7bcQFAn6II0aVFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKAUpSgFKUoBSlKA//Z" alt="Namour System Monitor Logo" className={className} />
 );
 
 export const TemperatureIcon: React.FC = () => (
@@ -163,5 +163,54 @@ export const FileIcon: React.FC<{className?: string}> = ({ className }) => (
 export const FolderIcon: React.FC<{className?: string}> = ({ className }) => (
     <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
         <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+    </svg>
+);
+
+export const SunIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+);
+
+export const MoonIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+    </svg>
+);
+
+export const MonitorIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={`w-5 h-5 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+        <line x1="8" y1="21" x2="16" y2="21"></line>
+        <line x1="12" y1="17" x2="12" y2="21"></line>
+    </svg>
+);
+
+export const CopyIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+    </svg>
+);
+
+export const CheckIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <polyline points="20 6 9 17 4 12"></polyline>
+    </svg>
+);
+
+export const ClearIcon: React.FC<{className?: string}> = ({ className }) => (
+    <svg className={`w-4 h-4 ${className}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+        <line x1="10" y1="11" x2="10" y2="17"></line>
+        <line x1="14" y1="11" x2="14" y2="17"></line>
     </svg>
 );

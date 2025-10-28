@@ -32,3 +32,8 @@ export interface GroupedError {
   count: number;
   firstTimestamp: string;
 }
+
+export interface Message {
+  role: 'user' | 'model';
+  content: string;
+}
